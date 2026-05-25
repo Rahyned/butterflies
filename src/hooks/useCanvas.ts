@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CanvasElement, Tool, Point } from '../types/canvas';
 import { getElementBounds } from '../utils/hitTest';
 
@@ -33,6 +33,7 @@ export function useCanvas() {
   const isMoving = useRef(false);
   const moveStartWorld = useRef<Point | null>(null);
   const moveOrigins = useRef<Map<string, { x: number; y: number; points?: Point[] }>>(new Map());
+  const shiftPressed = useRef(false);
 
   const isResizing = useRef(false);
   const resizeHandle = useRef<string | null>(null);
@@ -93,7 +94,14 @@ export function useCanvas() {
       case 'ellipse': {
         const x = Math.min(start.x, world.x);
         const y = Math.min(start.y, world.y);
-        drawingElement.current = { ...el, x, y, width: Math.abs(world.x - start.x), height: Math.abs(world.y - start.y) };
+        let w = Math.abs(world.x - start.x);
+        let h = Math.abs(world.y - start.y);
+        if (shiftPressed.current) {
+          const size = Math.max(w, h);
+          w = size;
+          h = size;
+        }
+        drawingElement.current = { ...el, x, y, width: w, height: h };
         break;
       }
       case 'line':
@@ -170,6 +178,16 @@ export function useCanvas() {
             moveOrigins.current = map;
           } else {
             setSelectedIds([clickedId]);
+            isMoving.current = true;
+            moveStartWorld.current = world;
+            const map = new Map<string, { x: number; y: number; points?: Point[] }>();
+            const el = elements[i];
+            map.set(el.id, {
+              x: el.x,
+              y: el.y,
+              points: ('points' in el && el.points) ? [...el.points] : undefined,
+            });
+            moveOrigins.current = map;
           }
           return;
         }
@@ -331,6 +349,21 @@ export function useCanvas() {
 
   const setSpacePressed = useCallback((pressed: boolean) => { spacePressed.current = pressed; }, []);
   const isSpacePressed = useCallback(() => spacePressed.current, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') shiftPressed.current = true;
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') shiftPressed.current = false;
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   const deleteSelected = useCallback(() => {
     setElements(prev => prev.filter(el => !selectedIds.includes(el.id)));

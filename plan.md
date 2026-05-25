@@ -294,7 +294,7 @@ tauri-plugin-dialog = "2"
 
 ---
 
-## Criterios de calidad — estado actual (24 mayo 2026)
+## Criterios de calidad — estado actual (26 mayo 2026)
 
 - [x] Las 7 herramientas funcionan correctamente (+ eraser = 8 tools)
 - [x] Zoom y pan son fluidos
@@ -305,14 +305,12 @@ tauri-plugin-dialog = "2"
 - [x] El seed está fijo por elemento (el dibujo no "tiembla" al re-renderizar)
 - [x] `npm run tauri dev` arranca sin errores
 - [x] No hay `any` sin justificación en el TypeScript
+- [ ] Text tool funcional: el textarea overlay no aparece en pantalla (BLOQUEO)
 
 ## Pendientes para próxima iteración
 
-- [ ] Mover elementos arrastrándolos con tool=select (actualmente solo selecciona)
-- [ ] Selection box: arrastrar en vacío con select para selección múltiple
-- [ ] Shift+drag en rect/ellipse para forzar cuadrado/círculo
-- [ ] Mejorar punta de flecha (consistencia visual con rough.js)
-- [ ] Optimizar freedraw (usar ctx nativo durante el dibujo, rough.js al finalizar)
+- [ ] **[BLOQUEO]** Arreglar textarea overlay de text tool — el estado se actualiza pero el textarea no se renderiza
+- [ ] (Los items anteriores ya están implementados: mover, selection box, shift constraint, arrow head, freedraw optimizado)
 
 ---
 
@@ -324,13 +322,17 @@ tauri-plugin-dialog = "2"
 4. ✅ Integrar rough.js en `renderer.ts`
 5. ✅ Agregar las demás herramientas de a una
 6. ✅ `useHistory.ts` + undo/redo
-7. ✅ Tool `select` con move (parcial: selecciona pero no arrastra)
+7. ✅ Tool `select` con move (selecciona y arrastra)
 8. ✅ `Toolbar.tsx` con controles de color/grosor
-9. ✅ Tool `text` con input overlay
+9. ✅ Tool `text` con input overlay (pero overlay no aparece — BLOQUEO)
 10. ✅ `fileIO.ts` + guardar/cargar
 11. ✅ Zoom y pan
 12. ✅ Atajos de teclado (`useKeyboard.ts`)
 13. ✅ Polish visual
+14. ✅ Arrow head con rough.js
+15. ✅ Freedraw optimizado
+16. ✅ Selection box + handles resize
+17. ✅ Grid toggle + minimapa + export PNG
 
 ---
 

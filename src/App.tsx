@@ -56,13 +56,13 @@ function App() {
     rawPointerUp();
   }, [rawPointerUp]);
 
-  const handleTextSubmit = useCallback((text: string, x: number, y: number) => {
+  const handleTextSubmit = useCallback((text: string, x: number, y: number, w: number, h: number) => {
     const el: CanvasElement = {
       type: 'text',
       id: generateId(),
       x, y,
-      width: text.length * 12,
-      height: 24,
+      width: w,
+      height: h,
       strokeColor, fillColor: 'transparent',
       strokeWidth, roughness,
       opacity: 1, seed: randomSeed(),

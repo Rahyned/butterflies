@@ -13,31 +13,35 @@ Sos el desarrollador principal de esta app. Seguí este documento como fuente de
 - **CSS puro** (sin Tailwind, sin UI libraries)
 - **Vite 7** (bundler)
 
-## Estado actual (24 mayo 2026)
+## Estado actual (26 mayo 2026)
 
 ### ✅ Funcionando
 
-- Las 8 tools: `select`, `rect`, `ellipse`, `line`, `arrow`, `freedraw`, `text`, `eraser`
+- Las 8 tools: `select`, `rect`, `ellipse`, `line`, `arrow`, `freedraw`, `eraser`
 - Zoom con Ctrl+wheel (rango 0.1x – 5x)
 - Pan con espacio + drag
 - Undo/Redo con Ctrl+Z / Ctrl+Shift+Z (historial de 50 estados)
 - Guardar/Cargar con diálogo nativo del SO (@tauri-apps/plugin-dialog + plugin-fs)
 - Atajos de teclado: teclas 1-8 para tools, Ctrl+S/O/A, Delete/Backspace, Escape
 - rough.js integrado con seed fijo por elemento (el dibujo no "tiembla" al re-renderizar)
-- Toolbar con selector de herramienta, color de trazo, color de relleno, grosor (S/M/L), roughness (slider 0-2), botones Undo/Redo/Save/Load/New
-- Text tool con input overlay (textarea), submit con Enter, cancel con Escape
-- Selection visual con dashed box azul `#4cc9f0` y handles en esquinas
-- Tema oscuro: fondo `#1a1a2e`, toolbar `#16213e`
+- Toolbar con selector de herramienta, color de trazo, color de relleno, grosor (S/M/L), roughness (botones 0/1/2), botones Undo/Redo/Save/Load/New/Grid/Map/Export
+- Text tool: click crea TextElement (pero input overlay no aparece → no se puede escribir texto nuevo)
+- Selection visual con dashed box azul `#4cc9f0` y handles en esquinas (8 handles, resize funcional)
+- Mover elementos seleccionados con drag (click + drag inmediato)
+- Selection box (arrastrar en vacío con select para selección múltiple)
+- Shift constraint en rect/ellipse (cuadrado/círculo)
+- Arrow head con rough.js (consistencia visual)
+- Freedraw optimizado (ctx nativo durante dibujo, rough.js al finalizar)
+- Grid toggle y minimapa
+- Export a PNG
+- Hand tool (pan con click + drag y shortcut 0)
+- Tema oscuro: fondo `#1a1a2e`, toolbar `#0f1628`
 - `npm run tauri dev` arranca sin errores
 - Build release genera `excalidraw-desktop.exe` (verificado)
 
 ### ⏳ Pendientes (priorizados)
 
-1. **Mover elementos seleccionados** — con tool `select`, drag sobre un elemento seleccionado debe moverlo (actualmente solo selecciona al hacer click, no arrastra)
-2. **Selection box** — con tool `select`, arrastrar en espacio vacío debe dibujar un recuadro de selección y seleccionar múltiples elementos
-3. **Shift para constraint** — Shift + drag en rect/ellipse debe forzar cuadrado/círculo (proporción 1:1)
-4. **Mejorar punta de flecha** — actualmente se dibuja con Canvas 2D API directa, debería integrarse mejor con rough.js o al menos coincidir visualmente
-5. **Optimizar freedraw** — cada segmento se dibuja con `rc.line()` de rough.js, podría ser lento con muchos puntos; considerar dibujar con ctx nativo y solo aplicar rough.js al finalizar
+1. **[BLOQUEO] Textarea overlay no aparece** — el estado `textInputPos` se actualiza correctamente (visible en debug overlay), pero el textarea no se renderiza en pantalla. Intentado: render condicional, display block/none, visibility/opacity, position fixed fuera del contenedor, position absolute dentro, eventos nativos mousedown, e.offsetX/e.offsetY. NADA funciona. Causa raíz desconocida.
 
 ### Decisiones técnicas tomadas
 

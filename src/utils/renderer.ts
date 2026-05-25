@@ -1,7 +1,7 @@
 import type { RoughCanvas } from 'roughjs/bin/canvas';
 import type { CanvasElement, Point } from '../types/canvas';
 
-export function renderElement(ctx: CanvasRenderingContext2D, el: CanvasElement, rc: RoughCanvas) {
+export function renderElement(ctx: CanvasRenderingContext2D, el: CanvasElement, rc: RoughCanvas, isDrawing = false) {
   const opts: Record<string, unknown> = {
     seed: el.seed,
     roughness: el.roughness,
@@ -29,23 +29,39 @@ export function renderElement(ctx: CanvasRenderingContext2D, el: CanvasElement, 
       rc.line(p1.x, p1.y, p2.x, p2.y, opts);
       const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
       const headLen = 12;
-      ctx.save();
-      ctx.fillStyle = el.strokeColor;
-      ctx.translate(p2.x, p2.y);
-      ctx.rotate(angle);
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(-headLen, -headLen / 2.5);
-      ctx.lineTo(-headLen, headLen / 2.5);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
+      const headAngle = Math.PI / 6;
+      rc.polygon([
+        [p2.x, p2.y] as const,
+        [p2.x - headLen * Math.cos(angle - headAngle), p2.y - headLen * Math.sin(angle - headAngle)] as const,
+        [p2.x - headLen * Math.cos(angle + headAngle), p2.y - headLen * Math.sin(angle + headAngle)] as const,
+      ] as [number, number][], {
+        ...opts,
+        fill: el.strokeColor,
+        fillStyle: 'solid',
+        stroke: el.strokeColor,
+      });
       break;
     }
     case 'freedraw':
       if (el.points.length < 2) break;
-      for (let i = 1; i < el.points.length; i++) {
-        rc.line(el.points[i - 1].x, el.points[i - 1].y, el.points[i].x, el.points[i].y, opts);
+      if (isDrawing) {
+        ctx.save();
+        ctx.strokeStyle = el.strokeColor;
+        ctx.lineWidth = el.strokeWidth;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.globalAlpha = el.opacity;
+        ctx.beginPath();
+        ctx.moveTo(el.points[0].x, el.points[0].y);
+        for (let i = 1; i < el.points.length; i++) {
+          ctx.lineTo(el.points[i].x, el.points[i].y);
+        }
+        ctx.stroke();
+        ctx.restore();
+      } else {
+        for (let i = 1; i < el.points.length; i++) {
+          rc.line(el.points[i - 1].x, el.points[i - 1].y, el.points[i].x, el.points[i].y, opts);
+        }
       }
       break;
     case 'text':
@@ -53,7 +69,27 @@ export function renderElement(ctx: CanvasRenderingContext2D, el: CanvasElement, 
       ctx.font = `${el.fontSize}px ${el.fontFamily}`;
       ctx.fillStyle = el.strokeColor;
       ctx.globalAlpha = el.opacity;
-      ctx.fillText(el.text, el.x, el.y + el.fontSize);
+      ctx.textBaseline = 'top';
+      {
+        const words = el.text.split(' ');
+        let line = '';
+        let lineY = 0;
+        const lineHeight = el.fontSize * 1.2;
+        for (const word of words) {
+          const testLine = line ? line + ' ' + word : word;
+          const m = ctx.measureText(testLine);
+          if (m.width > el.width && line) {
+            ctx.fillText(line, el.x, el.y + lineY);
+            line = word;
+            lineY += lineHeight;
+          } else {
+            line = testLine;
+          }
+        }
+        if (line) {
+          ctx.fillText(line, el.x, el.y + lineY);
+        }
+      }
       ctx.restore();
       break;
   }

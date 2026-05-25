@@ -35,8 +35,5 @@ export function getElementBounds(el: CanvasElement): { x: number; y: number; wid
     const maxY = Math.max(...ys);
     return { x: minX, y: minY, width: Math.max(maxX - minX, 10), height: Math.max(maxY - minY, 10) };
   }
-  if (el.type === 'text') {
-    return { x: el.x, y: el.y, width: el.text.length * el.fontSize * 0.6, height: el.fontSize * 1.2 };
-  }
   return { x: el.x, y: el.y, width: Math.max(el.width, 10), height: Math.max(el.height, 10) };
 }

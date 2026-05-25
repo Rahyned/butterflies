@@ -16,7 +16,7 @@ interface CanvasProps {
   onPointerUp: () => void;
   onWheel: (deltaY: number, ctrlKey: boolean, clientX: number, clientY: number, rect: DOMRect) => void;
   tool: string;
-  onTextSubmit: (text: string, x: number, y: number) => void;
+  onTextSubmit: (text: string, x: number, y: number, w: number, h: number) => void;
   gridEnabled: boolean;
   selectionBox: { x: number; y: number; width: number; height: number } | null;
   showMinimap: boolean;
@@ -73,7 +73,9 @@ export default function Canvas({
   const containerRef = useRef<HTMLDivElement>(null);
   const minimapCanvasRef = useRef<HTMLCanvasElement>(null);
   const [textInputPos, setTextInputPos] = useState<{ x: number; y: number } | null>(null);
-  const [textValue, setTextValue] = useState('');
+  const textInputPosRef = useRef(textInputPos);
+  textInputPosRef.current = textInputPos;
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const render = useCallback(() => {
     const canvas = canvasRef.current;
@@ -104,7 +106,7 @@ export default function Canvas({
     }
 
     if (drawingElement.current) {
-      renderElement(ctx, drawingElement.current, rc);
+      renderElement(ctx, drawingElement.current, rc, true);
     }
 
     for (const id of selectedIds) {
@@ -198,29 +200,47 @@ export default function Canvas({
     ctx.strokeRect(vpLeft, vpTop, vpW, vpH);
   }, [elements, camera, showMinimap]);
 
-  const getCanvasRect = (): DOMRect => {
-    return canvasRef.current!.getBoundingClientRect();
-  };
+  const getWorldFromScreen = useCallback((screenX: number, screenY: number) => ({
+    x: (screenX - camera.x) / camera.zoom,
+    y: (screenY - camera.y) / camera.zoom,
+  }), [camera]);
 
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if (tool === 'text') {
-      const rect = getCanvasRect();
-      setTextInputPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-      setTextValue('');
-      return;
-    }
-    const rect = getCanvasRect();
-    onPointerDown(e.clientX, e.clientY, rect);
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    const rect = getCanvasRect();
-    onPointerMove(e.clientX, e.clientY, rect);
-  };
-
-  const handlePointerUp = () => {
-    onPointerUp();
-  };
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const onDown = (e: MouseEvent) => {
+      if (tool === 'text') {
+        if (textInputPosRef.current) {
+          const el = textareaRef.current;
+          if (el && el.value.trim()) {
+            const world = getWorldFromScreen(textInputPosRef.current.x, textInputPosRef.current.y);
+            onTextSubmit(el.value, world.x, world.y, el.offsetWidth, el.offsetHeight);
+          }
+          setTextInputPos(null);
+        } else {
+          setTextInputPos({ x: e.offsetX, y: e.offsetY });
+        }
+        return;
+      }
+      const rect = canvas.getBoundingClientRect();
+      onPointerDown(e.clientX, e.clientY, rect);
+    };
+    const onMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      onPointerMove(e.clientX, e.clientY, rect);
+    };
+    const onUp = () => { onPointerUp(); };
+    canvas.addEventListener('mousedown', onDown);
+    canvas.addEventListener('mousemove', onMove);
+    canvas.addEventListener('mouseup', onUp);
+    canvas.addEventListener('mouseleave', onUp);
+    return () => {
+      canvas.removeEventListener('mousedown', onDown);
+      canvas.removeEventListener('mousemove', onMove);
+      canvas.removeEventListener('mouseup', onUp);
+      canvas.removeEventListener('mouseleave', onUp);
+    };
+  }, [tool, onPointerDown, onPointerMove, onPointerUp, onTextSubmit, getWorldFromScreen]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -234,26 +254,20 @@ export default function Canvas({
     return () => canvas.removeEventListener('wheel', handler);
   }, [onWheel]);
 
-  const getWorldFromScreen = useCallback((screenX: number, screenY: number) => ({
-    x: (screenX - camera.x) / camera.zoom,
-    y: (screenY - camera.y) / camera.zoom,
-  }), [camera]);
+  useEffect(() => {
+    if (textInputPos && textareaRef.current) {
+      const el = textareaRef.current;
+      el.value = '';
+      el.style.height = 'auto';
+      el.focus();
+    }
+  }, [textInputPos]);
 
-  const handleTextKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      if (textValue.trim() && textInputPos) {
-        const world = getWorldFromScreen(textInputPos.x, textInputPos.y);
-        onTextSubmit(textValue, world.x, world.y);
-      }
+  useEffect(() => {
+    if (tool !== 'text' && textInputPos) {
       setTextInputPos(null);
-      setTextValue('');
     }
-    if (e.key === 'Escape') {
-      setTextInputPos(null);
-      setTextValue('');
-    }
-  };
+  }, [tool, textInputPos]);
 
   const cursorStyle = tool === 'text' ? 'text'
     : tool === 'eraser' ? 'pointer'
@@ -261,68 +275,78 @@ export default function Canvas({
     : 'crosshair';
 
   return (
-    <div ref={containerRef} style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
-      <canvas
-        ref={canvasRef}
-        style={{
-          display: 'block',
-          cursor: cursorStyle,
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          background: '#1a1a2e',
-        }}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-      />
-      {textInputPos && (
-        <textarea
-          autoFocus
-          value={textValue}
-          onChange={e => setTextValue(e.target.value)}
-          onKeyDown={handleTextKeyDown}
-          onBlur={() => {
-            if (textValue.trim() && textInputPos) {
-              const world = getWorldFromScreen(textInputPos.x, textInputPos.y);
-              onTextSubmit(textValue, world.x, world.y);
-            }
-            setTextInputPos(null);
-            setTextValue('');
-          }}
-          style={{
-            position: 'absolute',
-            left: textInputPos.x,
-            top: textInputPos.y,
-            background: 'rgba(26, 26, 46, 0.9)',
-            border: '1px dashed #4cc9f0',
-            color: '#e2e8f0',
-            font: `20px 'JetBrains Mono', monospace`,
-            padding: '4px',
-            outline: 'none',
-            resize: 'none',
-            overflow: 'hidden',
-            minWidth: '100px',
-            minHeight: '30px',
-            zIndex: 10,
-          }}
-        />
-      )}
-      {showMinimap && (
+    <>
+      <div ref={containerRef} style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
         <canvas
-          ref={minimapCanvasRef}
+          ref={canvasRef}
           style={{
+            display: 'block',
+            cursor: cursorStyle,
             position: 'absolute',
-            bottom: 12,
-            right: 12,
-            borderRadius: 6,
-            zIndex: 10,
-            cursor: 'pointer',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+            top: 0,
+            left: 0,
+            background: '#1a1a2e',
           }}
         />
-      )}
-    </div>
+        {showMinimap && (
+          <canvas
+            ref={minimapCanvasRef}
+            style={{
+              position: 'absolute',
+              bottom: 12,
+              right: 12,
+              borderRadius: 6,
+              zIndex: 10,
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+            }}
+          />
+        )}
+        <div style={{
+          display: textInputPos ? 'block' : 'none',
+          position: 'absolute',
+          left: textInputPos?.x ?? 0,
+          top: textInputPos?.y ?? 0,
+          zIndex: 9999,
+        }}>
+          <textarea
+            ref={textareaRef}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const el = textareaRef.current;
+                if (el && el.value.trim() && textInputPos) {
+                  const world = getWorldFromScreen(textInputPos.x, textInputPos.y);
+                  onTextSubmit(el.value, world.x, world.y, el.offsetWidth, el.offsetHeight);
+                }
+                setTextInputPos(null);
+              }
+              if (e.key === 'Escape') {
+                setTextInputPos(null);
+              }
+            }}
+            onInput={() => {
+              const el = textareaRef.current;
+              if (!el) return;
+              el.style.height = 'auto';
+              el.style.height = el.scrollHeight + 'px';
+            }}
+            style={{
+              background: 'rgba(26, 26, 46, 0.9)',
+              border: '1px dashed #4cc9f0',
+              color: '#e2e8f0',
+              fontFamily: 'monospace',
+              fontSize: '20px',
+              padding: '4px',
+              outline: 'none',
+              resize: 'both',
+              overflow: 'auto',
+              minWidth: '100px',
+              minHeight: '30px',
+            }}
+          />
+        </div>
+      </div>
+    </>
   );
 }

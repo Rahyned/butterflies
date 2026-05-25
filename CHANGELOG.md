@@ -115,3 +115,42 @@
 - Textarea font size ya no escala con `camera.zoom` (siempre 20px)
 - Eliminado `ctx.scale(dpr, dpr)` redundante en resize (ya se maneja en cada render)
 - Cursor de hand tool cambia a `grab`
+
+## 2026-05-25 (tarde)
+
+### Fase 11 — Mover elementos al arrastrar inmediatamente
+- `useCanvas.ts`: al hacer click en un elemento NO seleccionado, ahora inicia el modo move inmediatamente
+- Ya no requiere dos clicks: click + drag funciona de una
+
+### Fase 12 — Shift constraint (cuadrado/círculo)
+- `useCanvas.ts`: agregado `shiftPressed` ref con listener de teclado
+- `updateDrawing`: cuando Shift está presionado, rect/ellipse mantienen proporción 1:1
+
+### Fase 13 — Flecha con rough.js
+- `renderer.ts`: la punta de flecha ahora se dibuja con `rc.polygon()` de rough.js en vez de Canvas 2D API directa
+- Consistencia visual: misma semilla, mismo roughness que la línea
+
+### Fase 14 — Freedraw optimizado
+- `renderer.ts`: el elemento en progreso (`isDrawing=true`) se dibuja con ctx nativo (rápido)
+- Al finalizar, se renderiza con rough.js (sketch)
+- `Canvas.tsx`: pasa `isDrawing=true` al renderizar `drawingElement`
+
+### Fase 15 — Bugfix texto duplicado
+- `Canvas.tsx`: agregado `textSubmittedRef` para evitar que `onBlur` dispare un segundo `onTextSubmit` cuando se cierra el textarea vía Enter
+
+### Fase 16 — Bugfix textarea no aparecía
+- `Canvas.tsx`: cambiado `onPointerDown` por `onMouseDown` (pointer events no funcionaban en el WebView)
+- Textarea usa `display: block/none` en vez de renderizado condicional (React conditional rendering no funciona en este entorno)
+- Agregado `textareaRef` + `useEffect` para focus manual al mostrar el textarea
+- Eliminados logs de debug
+
+### [BLOQUEO] Textarea overlay no se renderiza
+- **Síntoma**: el estado `textInputPos` se actualiza correctamente (visible en debug overlay), pero el textarea no aparece en pantalla.
+- **Intentado**:
+  - Render condicional (`{textInputPos && <textarea/>}`) → no funciona
+  - `display: block/none` como style condicional → no funciona
+  - `visibility/opacity` toggles → no funciona
+  - `position: fixed` fuera del contenedor (para evitar `overflow:hidden`) → no funciona
+  - `position: absolute` dentro del contenedor con `e.offsetX/offsetY` → no funciona
+  - Eventos nativos `addEventListener('mousedown', ...)` en vez de React synthetic events → no funciona
+- **Estado**: PENDIENTE. Causa raíz desconocida. Sospecha: posible interferencia del WebView de Tauri con re-render condicional de React, o error silencioso en el componente Canvas.
