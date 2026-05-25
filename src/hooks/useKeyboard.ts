@@ -1,0 +1,91 @@
+import { useEffect } from 'react';
+import type { Tool } from '../types/canvas';
+
+interface KeyboardConfig {
+  onToolChange: (tool: Tool) => void;
+  onUndo: () => void;
+  onRedo: () => void;
+  onSave: () => void;
+  onLoad: () => void;
+  onDelete: () => void;
+  onSelectAll: () => void;
+  onEscape: () => void;
+  onSpaceDown: () => void;
+  onSpaceUp: () => void;
+}
+
+export function useKeyboard({
+  onToolChange, onUndo, onRedo, onSave, onLoad,
+  onDelete, onSelectAll, onEscape, onSpaceDown, onSpaceUp,
+}: KeyboardConfig) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+
+      const ctrl = e.ctrlKey || e.metaKey;
+
+      if (e.key === ' ') {
+        e.preventDefault();
+        onSpaceDown();
+        return;
+      }
+
+      if (e.key === 'Escape') { onEscape(); return; }
+      if (e.key === 'Delete' || e.key === 'Backspace') { onDelete(); return; }
+
+      if (ctrl) {
+        switch (e.key.toLowerCase()) {
+          case 'z':
+            e.preventDefault();
+            if (e.shiftKey) onRedo();
+            else onUndo();
+            return;
+          case 'y':
+            e.preventDefault();
+            onRedo();
+            return;
+          case 's':
+            e.preventDefault();
+            onSave();
+            return;
+          case 'o':
+            e.preventDefault();
+            onLoad();
+            return;
+          case 'a':
+            e.preventDefault();
+            onSelectAll();
+            return;
+        }
+        return;
+      }
+
+      const toolMap: Record<string, Tool> = {
+        '0': 'hand',
+        '1': 'select', '2': 'rect', '3': 'ellipse',
+        '4': 'line', '5': 'arrow', '6': 'text',
+        '7': 'freedraw', '8': 'eraser',
+      };
+      const tool = toolMap[e.key];
+      if (tool) {
+        e.preventDefault();
+        onToolChange(tool);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === ' ') {
+        e.preventDefault();
+        onSpaceUp();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [onToolChange, onUndo, onRedo, onSave, onLoad, onDelete, onSelectAll, onEscape, onSpaceDown, onSpaceUp]);
+}
