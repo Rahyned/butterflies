@@ -399,7 +399,7 @@ export default function Canvas({
           }}>
             {selectedIds.length >= 2 && (
               <div
-                onClick={() => { onGroup(); setContextMenuPos(null); }}
+                onMouseDown={(e) => { if (e.button !== 0) return; e.stopPropagation(); onGroup(); setContextMenuPos(null); }}
                 style={{
                   padding: '6px 16px',
                   cursor: 'pointer',
@@ -413,7 +413,7 @@ export default function Canvas({
             )}
             {groups.some(g => g.elementIds.some(id => selectedIds.includes(id))) && (
               <div
-                onClick={() => { onUngroup(); setContextMenuPos(null); }}
+                onMouseDown={(e) => { if (e.button !== 0) return; e.stopPropagation(); onUngroup(); setContextMenuPos(null); }}
                 style={{
                   padding: '6px 16px',
                   cursor: 'pointer',

@@ -217,3 +217,10 @@
 - Fix: agregado handler `mousedown button===2` para abrir el menú incluso si WebView2 intercepta el contextmenu event
 - Fix: `minHeight: 30` + fallback text "Seleccioná ≥2 elementos" en el menú para debug visual
 - Archivos tocados: `src/components/Canvas.tsx`
+
+### Fix: tool no volvía a select después de dibujar
+- Bug: al terminar de dibujar (rect, ellipse, line, arrow, freedraw) la tool NO volvía a 'select', dejando al usuario atascado en la herramienta de dibujo sin poder seleccionar
+- Bug: al borrar con eraser, la tool quedaba en 'eraser'
+- Fix: `finishDrawing()` ahora llama `setTool('select')`
+- Fix: eraser en `startDrawing()` también llama `setTool('select')`
+- Archivos tocados: `src/hooks/useCanvas.ts`
