@@ -1,60 +1,33 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Tool } from '../types/canvas';
 
 interface ToolbarProps {
   tool: Tool;
   onToolChange: (tool: Tool) => void;
-  strokeColor: string;
-  onStrokeColorChange: (color: string) => void;
-  fillColor: string;
-  onFillColorChange: (color: string) => void;
-  strokeWidth: number;
-  onStrokeWidthChange: (width: number) => void;
-  roughness: number;
-  onRoughnessChange: (roughness: number) => void;
-  onSave: () => void;
-  onLoad: () => void;
   onNew: () => void;
-  onUndo: () => void;
-  onRedo: () => void;
-  gridEnabled: boolean;
-  onGridToggle: () => void;
-  showMinimap: boolean;
-  onMinimapToggle: () => void;
-  onExportPNG: () => void;
+  position: { x: number; y: number };
+  onPositionChange: (pos: { x: number; y: number }) => void;
 }
 
-const toolGroups: { id: Tool; label: string; icon: string }[][] = [
-  [
-    { id: 'select', label: 'Seleccionar', icon: '⇱' },
-    { id: 'rect', label: 'Rectángulo', icon: '▭' },
-    { id: 'ellipse', label: 'Elipse', icon: '○' },
-    { id: 'line', label: 'Línea', icon: '╱' },
-    { id: 'arrow', label: 'Flecha', icon: '→' },
-  ],
-  [
-    { id: 'text', label: 'Texto', icon: 'T' },
-    { id: 'freedraw', label: 'Dibujar', icon: '✎' },
-    { id: 'eraser', label: 'Borrador', icon: '⌫' },
-    { id: 'hand', label: 'Mano', icon: '✋' },
-  ],
+const shapeTools: { id: Tool; label: string; icon: string }[] = [
+  { id: 'rect', label: 'Rectángulo', icon: '▭' },
+  { id: 'ellipse', label: 'Elipse', icon: '○' },
+  { id: 'line', label: 'Línea', icon: '╱' },
+  { id: 'arrow', label: 'Flecha', icon: '→' },
+  { id: 'text', label: 'Texto', icon: 'T' },
 ];
 
-const strokeWidths = [
-  { value: 1, label: 'F' },
-  { value: 2, label: 'M' },
-  { value: 4, label: 'G' },
-];
-
-const roughnessValues = [0, 1, 2];
+const isShapeTool = (t: Tool): boolean =>
+  t === 'rect' || t === 'ellipse' || t === 'line' || t === 'arrow' || t === 'text';
 
 const btnBase: React.CSSProperties = {
   background: 'transparent',
   color: '#c8d0e0',
   border: '1px solid #2d3a5a',
   borderRadius: '4px',
-  padding: '4px 8px',
+  padding: '5px 10px',
   cursor: 'pointer',
-  fontSize: '12px',
+  fontSize: '13px',
   fontFamily: "'JetBrains Mono', monospace",
   whiteSpace: 'nowrap',
   display: 'flex',
@@ -69,145 +42,175 @@ const activeBtn: React.CSSProperties = {
   border: '1px solid #4cc9f0',
 };
 
-const sep: React.CSSProperties = {
-  width: '1px',
-  height: '28px',
-  background: '#2d3a5a',
-  flexShrink: 0,
+const dropdownBtn: React.CSSProperties = {
+  ...btnBase,
 };
 
 export default function Toolbar({
   tool, onToolChange,
-  strokeColor, onStrokeColorChange,
-  fillColor, onFillColorChange,
-  strokeWidth, onStrokeWidthChange,
-  roughness, onRoughnessChange,
-  onSave, onLoad, onNew, onUndo, onRedo,
-  gridEnabled, onGridToggle,
-  showMinimap, onMinimapToggle,
-  onExportPNG,
+  onNew,
+  position, onPositionChange,
 }: ToolbarProps) {
+  const dragging = useRef(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    dragging.current = true;
+    dragOffset.current = { x: e.clientX - position.x, y: e.clientY - position.y };
+  }, [position]);
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      if (!dragging.current) return;
+      onPositionChange({
+        x: e.clientX - dragOffset.current.x,
+        y: e.clientY - dragOffset.current.y,
+      });
+    };
+    const handleUp = () => { dragging.current = false; };
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+    };
+  }, [onPositionChange]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [dropdownOpen]);
+
+  const currentShape = isShapeTool(tool) ? shapeTools.find(t => t.id === tool) : null;
+
   return (
     <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      padding: '6px 10px',
-      background: '#0f1628',
-      borderBottom: '1px solid #1a2640',
-      fontFamily: "'JetBrains Mono', monospace",
-      fontSize: '12px',
-      color: '#c8d0e0',
       position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
+      left: position.x,
+      top: position.y,
       zIndex: 100,
       userSelect: 'none',
-      overflowX: 'auto',
+      background: '#0f1628',
+      border: '1px solid #1e2d4a',
+      borderRadius: '8px',
+      boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+      fontFamily: "'JetBrains Mono', monospace",
+      fontSize: '13px',
+      color: '#c8d0e0',
     }}>
-      {/* Group 1: Tools */}
-      {toolGroups[0].map(t => (
+      {/* Drag handle */}
+      <div
+        onMouseDown={handleDragStart}
+        style={{
+          cursor: 'grab',
+          padding: '6px 12px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          borderBottom: '1px solid #1a2640',
+          fontSize: '11px',
+          color: '#5a6a8a',
+        }}
+      >
+        <span style={{ fontSize: '14px', lineHeight: '14px' }}>⠿</span>
+        <span>Butterflies</span>
+      </div>
+
+      {/* Tool buttons */}
+      <div style={{ padding: '6px 10px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
         <button
-          key={t.id}
-          title={t.label}
-          onClick={() => onToolChange(t.id)}
-          style={tool === t.id ? activeBtn : btnBase}
+          onClick={() => onToolChange('select')}
+          style={tool === 'select' ? activeBtn : btnBase}
+          title="Seleccionar (1)"
         >
-          {t.icon} {t.label}
+          ⇱ Seleccionar
         </button>
-      ))}
-      <div style={sep} />
-      {toolGroups[1].map(t => (
+
         <button
-          key={t.id}
-          title={t.label}
-          onClick={() => onToolChange(t.id)}
-          style={tool === t.id ? activeBtn : btnBase}
+          onClick={() => onToolChange('hand')}
+          style={tool === 'hand' ? activeBtn : btnBase}
+          title="Mano (0)"
         >
-          {t.icon} {t.label}
+          ✋ Mano
         </button>
-      ))}
 
-      <div style={sep} />
-
-      {/* Group 2: Properties */}
-      <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px' }}>
-        Trazo
-        <input
-          type="color"
-          value={strokeColor}
-          onChange={e => onStrokeColorChange(e.target.value)}
-          style={{ width: '22px', height: '22px', border: 'none', padding: 0, cursor: 'pointer', background: 'none' }}
-        />
-      </label>
-
-      <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px' }}>
-        Relleno
-        <input
-          type="color"
-          value={fillColor === 'transparent' ? '#ffffff' : fillColor}
-          onChange={e => onFillColorChange(e.target.value)}
-          style={{ width: '22px', height: '22px', border: 'none', padding: 0, cursor: 'pointer', background: 'none' }}
-        />
         <button
-          onClick={() => onFillColorChange('transparent')}
-          style={fillColor === 'transparent' ? activeBtn : btnBase}
-          title="Sin relleno"
+          onClick={() => onToolChange('freedraw')}
+          style={tool === 'freedraw' ? activeBtn : btnBase}
+          title="Dibujar (7)"
         >
-          ∅
+          ✎ Dibujar
         </button>
-      </label>
 
-      <div style={sep} />
-
-      <span style={{ fontSize: '11px', marginRight: '2px' }}>G:</span>
-      {strokeWidths.map(sw => (
         <button
-          key={sw.value}
-          onClick={() => onStrokeWidthChange(sw.value)}
-          style={strokeWidth === sw.value ? activeBtn : btnBase}
+          onClick={() => onToolChange('eraser')}
+          style={tool === 'eraser' ? activeBtn : btnBase}
+          title="Borrador (8)"
         >
-          {sw.label}
+          ⌫ Borrar
         </button>
-      ))}
 
-      <div style={sep} />
-
-      <span style={{ fontSize: '11px', marginRight: '2px' }}>R:</span>
-      {roughnessValues.map(r => (
         <button
-          key={r}
-          onClick={() => onRoughnessChange(r)}
-          style={roughness === r ? activeBtn : btnBase}
+          onClick={onNew}
+          style={btnBase}
+          title="Nuevo dibujo"
         >
-          {r}
+          📄 Nuevo
         </button>
-      ))}
 
-      <div style={sep} />
+        {/* Formas y Texto dropdown */}
+        <div ref={dropdownRef} style={{ position: 'relative' }}>
+          <button
+            onClick={() => setDropdownOpen(o => !o)}
+            style={currentShape ? { ...dropdownBtn, ...(isShapeTool(tool) ? { borderColor: '#4cc9f0' } : {}) } : dropdownBtn}
+            title="Formas y Texto"
+          >
+            <span>{currentShape ? `${currentShape.icon} ${currentShape.label}` : '▦ Formas y Texto'}</span>
+            <span style={{ fontSize: '10px', opacity: 0.6 }}>▼</span>
+          </button>
 
-      {/* Group 3: Actions */}
-      <button onClick={onUndo} title="Deshacer (Ctrl+Z)" style={btnBase}>↩</button>
-      <button onClick={onRedo} title="Rehacer (Ctrl+Shift+Z)" style={btnBase}>↪</button>
-
-      <div style={sep} />
-
-      <button onClick={onSave} title="Guardar (Ctrl+S)" style={btnBase}>Guardar</button>
-      <button onClick={onLoad} title="Cargar (Ctrl+O)" style={btnBase}>Cargar</button>
-      <button onClick={onNew} title="Nuevo dibujo" style={btnBase}>Nuevo</button>
-
-      <div style={sep} />
-
-      <button onClick={onGridToggle} title="Mostrar cuadrícula" style={gridEnabled ? activeBtn : btnBase}>
-        Cuadrícula
-      </button>
-      <button onClick={onMinimapToggle} title="Mostrar minimapa" style={showMinimap ? activeBtn : btnBase}>
-        Mapa
-      </button>
-      <button onClick={onExportPNG} title="Exportar como PNG" style={btnBase}>
-        Exportar
-      </button>
+          {dropdownOpen && (
+            <div style={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              marginTop: '2px',
+              background: '#0f1628',
+              border: '1px solid #1e2d4a',
+              borderRadius: '6px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+              padding: '4px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '2px',
+              zIndex: 101,
+            }}>
+              {shapeTools.map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => {
+                    onToolChange(s.id);
+                    setDropdownOpen(false);
+                  }}
+                  style={tool === s.id ? { ...btnBase, ...activeBtn } : btnBase}
+                >
+                  {s.icon} {s.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

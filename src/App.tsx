@@ -1,10 +1,10 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import Canvas from './components/Canvas';
 import Toolbar from './components/Toolbar';
 import { useCanvas } from './hooks/useCanvas';
 import { useHistory } from './hooks/useHistory';
 import { useKeyboard } from './hooks/useKeyboard';
-import { saveFile, loadFile, exportPNG } from './utils/fileIO';
+import { saveFile, loadFile } from './utils/fileIO';
 import type { CanvasElement } from './types/canvas';
 import './App.css';
 
@@ -17,17 +17,17 @@ function randomSeed(): number {
 }
 
 function App() {
+  const [toolbarPos, setToolbarPos] = useState({ x: 12, y: 12 });
   const {
     tool, setTool,
     elements, setElements,
     selectedIds, setSelectedIds,
     camera,
-    strokeColor, setStrokeColor,
-    fillColor, setFillColor,
-    strokeWidth, setStrokeWidth,
-    roughness, setRoughness,
-    gridEnabled, setGridEnabled,
-    showMinimap, setShowMinimap,
+    strokeColor,
+    strokeWidth,
+    roughness,
+    gridEnabled,
+    showMinimap,
     drawingElement,
     selectionBox,
     handlePointerDown: rawPointerDown,
@@ -76,8 +76,11 @@ function App() {
   const handleSave = useCallback(async () => { await saveFile(elements); }, [elements]);
   const handleLoad = useCallback(async () => {
     const loaded = await loadFile();
-    if (loaded) setElements(loaded);
-  }, [setElements]);
+    if (loaded) {
+      setElements(loaded);
+      setSelectedIds([]);
+    }
+  }, [setElements, setSelectedIds]);
 
   const handleNew = useCallback(() => {
     setElements([]);
@@ -111,26 +114,11 @@ function App() {
       <Toolbar
         tool={tool}
         onToolChange={setTool}
-        strokeColor={strokeColor}
-        onStrokeColorChange={setStrokeColor}
-        fillColor={fillColor}
-        onFillColorChange={setFillColor}
-        strokeWidth={strokeWidth}
-        onStrokeWidthChange={setStrokeWidth}
-        roughness={roughness}
-        onRoughnessChange={setRoughness}
-        onSave={handleSave}
-        onLoad={handleLoad}
         onNew={handleNew}
-        onUndo={undo}
-        onRedo={redo}
-        gridEnabled={gridEnabled}
-        onGridToggle={() => setGridEnabled(prev => !prev)}
-        showMinimap={showMinimap}
-        onMinimapToggle={() => setShowMinimap(prev => !prev)}
-        onExportPNG={() => exportPNG(elements)}
+        position={toolbarPos}
+        onPositionChange={setToolbarPos}
       />
-      <div style={{ flex: 1, position: 'relative', marginTop: '48px' }}>
+      <div style={{ flex: 1, position: 'relative' }}>
         <Canvas
           elements={elements}
           drawingElement={drawingElement}

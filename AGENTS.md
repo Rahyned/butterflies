@@ -17,6 +17,7 @@ Sos el desarrollador principal de esta app. Seguí este documento como fuente de
 
 ### ✅ Funcionando
 
+- Notion MCP conectado (hosted remote, OAuth) para sincronizar CHANGELOG automáticamente
 - Las 8 tools: `select`, `rect`, `ellipse`, `line`, `arrow`, `freedraw`, `eraser`
 - Zoom con Ctrl+wheel (rango 0.1x – 5x)
 - Pan con espacio + drag
@@ -25,7 +26,7 @@ Sos el desarrollador principal de esta app. Seguí este documento como fuente de
 - Atajos de teclado: teclas 1-8 para tools, Ctrl+S/O/A, Delete/Backspace, Escape
 - rough.js integrado con seed fijo por elemento (el dibujo no "tiembla" al re-renderizar)
 - Toolbar con selector de herramienta, color de trazo, color de relleno, grosor (S/M/L), roughness (botones 0/1/2), botones Undo/Redo/Save/Load/New/Grid/Map/Export
-- Text tool: click crea TextElement (pero input overlay no aparece → no se puede escribir texto nuevo)
+- Text tool: click crea TextElement con word wrap, Enter confirma, Escape cierra
 - Selection visual con dashed box azul `#4cc9f0` y handles en esquinas (8 handles, resize funcional)
 - Mover elementos seleccionados con drag (click + drag inmediato)
 - Selection box (arrastrar en vacío con select para selección múltiple)
@@ -39,9 +40,9 @@ Sos el desarrollador principal de esta app. Seguí este documento como fuente de
 - `npm run tauri dev` arranca sin errores
 - Build release genera `butterflies.exe` (verificado)
 
-### ⏳ Pendientes (priorizados)
+### ⏳ Pendientes
 
-1. **[BLOQUEO] Textarea overlay no aparece** — el estado `textInputPos` se actualiza correctamente (visible en debug overlay), pero el textarea no se renderiza en pantalla. Intentado: render condicional, display block/none, visibility/opacity, position fixed fuera del contenedor, position absolute dentro, eventos nativos mousedown, e.offsetX/e.offsetY. NADA funciona. Causa raíz desconocida.
+_(ninguno — todo implementado)_
 
 ### Decisiones técnicas tomadas
 
@@ -53,6 +54,7 @@ Sos el desarrollador principal de esta app. Seguí este documento como fuente de
 | TMP/TEMP en `.cargo/config.toml` | Evita que gcc intente crear archivos temporales en `C:\WINDOWS` (permiso denegado) |
 | `useHistory` con `useRef` en vez de `useState` para stack | Evita closures stale en callbacks de undo/redo |
 | Colores/grosor/roughness en estado de `useCanvas` | Flujo unificado desde Toolbar → useCanvas → elementos dibujados |
+| Textarea no-controlado (sin `value` prop) | WebView2 + React 19 no renderiza `<textarea>` controlado con `value`; no-controlado funciona |
 
 ### Reglas obligatorias
 
@@ -61,6 +63,7 @@ Sos el desarrollador principal de esta app. Seguí este documento como fuente de
 - **No guardar en localStorage** — solo Tauri FS
 - **No hacer fetch a URLs externas**
 - **Registrar cada cambio en `CHANGELOG.md`** con fecha, descripción y archivos tocados
+- **Actualizar la página CHANGELOG en Notion** con cada cambio que se registre en `CHANGELOG.md`. La página está dentro de la página `butterflies` (ID: `36c71396-eaa5-8079-9197-c049b3e512e0`), sub-página CHANGELOG (ID: `36c71396-eaa5-81e5-95d7-de59efa25e7c`)
 
 ## Comandos
 

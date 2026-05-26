@@ -305,12 +305,11 @@ tauri-plugin-dialog = "2"
 - [x] El seed está fijo por elemento (el dibujo no "tiembla" al re-renderizar)
 - [x] `npm run tauri dev` arranca sin errores
 - [x] No hay `any` sin justificación en el TypeScript
-- [ ] Text tool funcional: el textarea overlay no aparece en pantalla (BLOQUEO)
+- [x] Text tool funcional: click crea TextElement con word wrap, Enter confirma, Escape cierra
 
 ## Pendientes para próxima iteración
 
-- [ ] **[BLOQUEO]** Arreglar textarea overlay de text tool — el estado se actualiza pero el textarea no se renderiza
-- [ ] (Los items anteriores ya están implementados: mover, selection box, shift constraint, arrow head, freedraw optimizado)
+_(ninguno — todo implementado)_
 
 ---
 
@@ -324,7 +323,7 @@ tauri-plugin-dialog = "2"
 6. ✅ `useHistory.ts` + undo/redo
 7. ✅ Tool `select` con move (selecciona y arrastra)
 8. ✅ `Toolbar.tsx` con controles de color/grosor
-9. ✅ Tool `text` con input overlay (pero overlay no aparece — BLOQUEO)
+9. ✅ Tool `text` con input overlay
 10. ✅ `fileIO.ts` + guardar/cargar
 11. ✅ Zoom y pan
 12. ✅ Atajos de teclado (`useKeyboard.ts`)

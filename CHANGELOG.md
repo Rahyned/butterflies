@@ -154,3 +154,41 @@
   - `position: absolute` dentro del contenedor con `e.offsetX/offsetY` → no funciona
   - Eventos nativos `addEventListener('mousedown', ...)` en vez de React synthetic events → no funciona
 - **Estado**: PENDIENTE. Causa raíz desconocida. Sospecha: posible interferencia del WebView de Tauri con re-render condicional de React, o error silencioso en el componente Canvas.
+
+## 2026-05-26
+
+### Fix: Guardado/Carga no funcionaba (FS permissions)
+- Agregado `"fs:read-all"` y `"fs:write-all"` en `src-tauri/capabilities/default.json`
+- Reemplazados imports dinámicos por estáticos en `src/utils/fileIO.ts`
+- Agregado try/catch con console.error en saveFile, loadFile, exportPNG
+- Agregada validación de `data.elements` como array en loadFile
+- `saveFile` ahora retorna boolean
+- `handleLoad` en `src/App.tsx` ahora limpia `selectedIds` al cargar
+
+### Fix: Vite recargaba al guardar .json
+- Agregado `"**/*.json"` al `watch.ignored` en `vite.config.ts`
+
+### Config: LSPs para opencode
+- Instalado `typescript-language-server` global
+- Configurados rust-analyzer y typescript en `opencode.json`
+
+### Notion MCP + CHANGELOG en Notion
+- Configurado Notion MCP (server remoto `https://mcp.notion.com/mcp`) en `opencode.json`
+- Autenticado via OAuth con `opencode mcp auth notion`
+- Creada sub-página CHANGELOG dentro de la página Notion `butterflies` con el historial completo del proyecto
+- Agregada regla en `AGENTS.md` para actualizar la página CHANGELOG de Notion en cada cambio
+- Archivos tocados: `opencode.json`, `AGENTS.md`, `CHANGELOG.md`
+
+### Toolbar flotante arrastrable
+- Toolbar ahora es un panel flotante (`position: fixed` con `left`/`top` dinámicos) en vez de barra fija al tope
+- Agregado drag handle (⠿) en el header del panel para arrastrarlo por el canvas
+- Canvas ahora ocupa 100vw x 100vh completo (sin `marginTop`)
+- Estilos: `borderRadius: 8px`, `boxShadow`, borde sutil
+- Archivos tocados: `src/App.tsx`, `src/components/Toolbar.tsx`
+
+### Toolbar reorganizada — solo 6 items
+- Toolbar simplificada a 6 elementos: Seleccionar, Mano, Dibujar, Borrar, Nuevo, Formas y Texto (dropdown)
+- Dropdown "Formas y Texto" con: Rectángulo, Elipse, Línea, Flecha, Texto
+- Eliminados del toolbar: colores, grosor, roughness, undo/redo, guardar/cargar, cuadrícula, mapa, exportar
+- Toolbar usa `width: 200px` con botones en columna
+- Archivos tocados: `src/App.tsx`, `src/components/Toolbar.tsx`
