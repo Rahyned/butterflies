@@ -27,6 +27,11 @@ export type CanvasElement =
   | RectElement | EllipseElement | LineElement
   | ArrowElement | TextElement | FreedrawElement;
 
+export type Group = {
+  id: string;
+  elementIds: string[];
+};
+
 export type CanvasState = {
   elements: CanvasElement[];
   selectedIds: string[];

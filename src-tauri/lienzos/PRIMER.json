@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "elements": [
+    {
+      "type": "rect",
+      "id": "71d3frylj",
+      "x": 512,
+      "y": 89,
+      "width": 699,
+      "height": 391,
+      "strokeColor": "#e2e8f0",
+      "fillColor": "transparent",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "opacity": 1,
+      "seed": 17325
+    },
+    {
+      "type": "text",
+      "id": "b79alho94",
+      "x": 541,
+      "y": 153,
+      "width": 649,
+      "height": 238,
+      "strokeColor": "#e2e8f0",
+      "fillColor": "transparent",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "opacity": 1,
+      "seed": 12111,
+      "text": "asdsdasdAAAAAAAAAAAAAA",
+      "fontSize": 20,
+      "fontFamily": "'JetBrains Mono', monospace"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { CanvasElement, Tool, Point } from '../types/canvas';
+import type { CanvasElement, Tool, Point, Group } from '../types/canvas';
 import { getElementBounds } from '../utils/hitTest';
 
 function generateId(): string {
@@ -14,6 +14,7 @@ export function useCanvas() {
   const [tool, setTool] = useState<Tool>('select');
   const [elements, setElements] = useState<CanvasElement[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [groups, setGroups] = useState<Group[]>([]);
   const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 1 });
 
   const [strokeColor, setStrokeColor] = useState('#e2e8f0');
@@ -158,40 +159,41 @@ export function useCanvas() {
         }
       }
 
+      let hitId: string | null = null;
       for (let i = elements.length - 1; i >= 0; i--) {
         if (hitTestElement(elements[i], world)) {
-          const clickedId = elements[i].id;
-          if (selectedIds.includes(clickedId) && selectedIds.length > 0) {
-            isMoving.current = true;
-            moveStartWorld.current = world;
-            const map = new Map<string, { x: number; y: number; points?: Point[] }>();
-            for (const id of selectedIds) {
-              const el = elements.find(e => e.id === id);
-              if (el) {
-                map.set(id, {
-                  x: el.x,
-                  y: el.y,
-                  points: ('points' in el && el.points) ? [...el.points] : undefined,
-                });
-              }
-            }
-            moveOrigins.current = map;
-          } else {
-            setSelectedIds([clickedId]);
-            isMoving.current = true;
-            moveStartWorld.current = world;
-            const map = new Map<string, { x: number; y: number; points?: Point[] }>();
-            const el = elements[i];
-            map.set(el.id, {
+          hitId = elements[i].id;
+          break;
+        }
+      }
+
+      if (hitId) {
+        const containingGroup = groups.find(g => g.elementIds.includes(hitId!));
+        const idsToSelect = containingGroup ? containingGroup.elementIds : [hitId];
+        const allAlreadySelected = idsToSelect.every(id => selectedIds.includes(id));
+        const targetIds = allAlreadySelected && selectedIds.length > 0 ? selectedIds : idsToSelect;
+
+        if (!allAlreadySelected || selectedIds.length === 0) {
+          setSelectedIds(idsToSelect);
+        }
+
+        isMoving.current = true;
+        moveStartWorld.current = world;
+        const map = new Map<string, { x: number; y: number; points?: Point[] }>();
+        for (const id of targetIds) {
+          const el = elements.find(e => e.id === id);
+          if (el) {
+            map.set(id, {
               x: el.x,
               y: el.y,
               points: ('points' in el && el.points) ? [...el.points] : undefined,
             });
-            moveOrigins.current = map;
           }
-          return;
         }
+        moveOrigins.current = map;
+        return;
       }
+
       isSelecting.current = true;
       selectStart.current = world;
       const startBox = { x: world.x, y: world.y, width: 0, height: 0 };
@@ -203,7 +205,7 @@ export function useCanvas() {
     if (tool === 'text') return;
 
     startDrawing(world);
-  }, [getWorldCoords, tool, elements, startDrawing, camera]);
+  }, [getWorldCoords, tool, elements, startDrawing, camera, groups]);
 
   const handlePointerMove = useCallback((clientX: number, clientY: number, canvasRect: DOMRect) => {
     if (isPanning.current && panStart.current && cameraStart.current) {
@@ -367,15 +369,36 @@ export function useCanvas() {
 
   const deleteSelected = useCallback(() => {
     setElements(prev => prev.filter(el => !selectedIds.includes(el.id)));
+    setGroups(prev => {
+      const updated = prev.map(group => ({
+        ...group,
+        elementIds: group.elementIds.filter(id => !selectedIds.includes(id)),
+      }));
+      return updated.filter(group => group.elementIds.length >= 2);
+    });
     setSelectedIds([]);
   }, [selectedIds]);
 
   const selectAll = useCallback(() => setSelectedIds(elements.map(el => el.id)), [elements]);
 
+  const groupElements = useCallback((ids: string[]) => {
+    if (ids.length < 2) return;
+    const groupId = generateId();
+    setGroups(prev => [...prev, { id: groupId, elementIds: ids }]);
+  }, []);
+
+  const ungroupElements = useCallback(() => {
+    setGroups(prev => prev.filter(group =>
+      !group.elementIds.some(id => selectedIds.includes(id))
+    ));
+  }, [selectedIds]);
+
   return {
     tool, setTool,
     elements, setElements,
     selectedIds, setSelectedIds,
+    groups, setGroups,
+    groupElements, ungroupElements,
     camera, setCamera,
     strokeColor, setStrokeColor,
     fillColor, setFillColor,

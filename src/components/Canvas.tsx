@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import rough from 'roughjs';
 import type { RoughCanvas } from 'roughjs/bin/canvas';
-import type { CanvasElement } from '../types/canvas';
+import type { CanvasElement, Group } from '../types/canvas';
 import { renderElement, renderSelectionBox, renderSelectionHandles } from '../utils/renderer';
 import { getElementBounds } from '../utils/hitTest';
 
@@ -10,6 +10,7 @@ interface CanvasProps {
   elements: CanvasElement[];
   drawingElement: React.MutableRefObject<CanvasElement | null>;
   selectedIds: string[];
+  groups: Group[];
   camera: { x: number; y: number; zoom: number };
   onPointerDown: (clientX: number, clientY: number, rect: DOMRect) => void;
   onPointerMove: (clientX: number, clientY: number, rect: DOMRect) => void;
@@ -20,6 +21,8 @@ interface CanvasProps {
   gridEnabled: boolean;
   selectionBox: { x: number; y: number; width: number; height: number } | null;
   showMinimap: boolean;
+  onGroup: () => void;
+  onUngroup: () => void;
 }
 
 function drawGrid(ctx: CanvasRenderingContext2D, camera: { x: number; y: number; zoom: number }, canvasWidth: number, canvasHeight: number) {
@@ -64,9 +67,10 @@ function drawGrid(ctx: CanvasRenderingContext2D, camera: { x: number; y: number;
 }
 
 export default function Canvas({
-  elements, drawingElement, selectedIds, camera,
+  elements, drawingElement, selectedIds, groups, camera,
   onPointerDown, onPointerMove, onPointerUp, onWheel,
   tool, onTextSubmit, gridEnabled, selectionBox, showMinimap,
+  onGroup, onUngroup,
 }: CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const roughCanvasRef = useRef<RoughCanvas | null>(null);
@@ -76,6 +80,7 @@ export default function Canvas({
   const textInputPosRef = useRef(textInputPos);
   textInputPosRef.current = textInputPos;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null);
 
   const render = useCallback(() => {
     const canvas = canvasRef.current;
@@ -255,6 +260,24 @@ export default function Canvas({
   }, [onWheel]);
 
   useEffect(() => {
+    const div = containerRef.current;
+    if (!div) return;
+    const onContext = (e: MouseEvent) => {
+      e.preventDefault();
+      setContextMenuPos({ x: e.clientX, y: e.clientY });
+    };
+    const closeMenu = () => setContextMenuPos(null);
+    div.addEventListener('contextmenu', onContext);
+    window.addEventListener('click', closeMenu, true);
+    window.addEventListener('contextmenu', closeMenu, true);
+    return () => {
+      div.removeEventListener('contextmenu', onContext);
+      window.removeEventListener('click', closeMenu, true);
+      window.removeEventListener('contextmenu', closeMenu, true);
+    };
+  }, []);
+
+  useEffect(() => {
     if (textInputPos && textareaRef.current) {
       const el = textareaRef.current;
       el.value = '';
@@ -346,6 +369,52 @@ export default function Canvas({
             }}
           />
         </div>
+        {contextMenuPos && (
+          <div style={{
+            position: 'fixed',
+            left: contextMenuPos.x,
+            top: contextMenuPos.y,
+            zIndex: 10000,
+            background: '#0f1628',
+            border: '1px solid #2d3a5a',
+            borderRadius: 4,
+            padding: '4px 0',
+            minWidth: 160,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 13,
+            color: '#e2e8f0',
+          }}>
+            {selectedIds.length >= 2 && (
+              <div
+                onClick={() => { onGroup(); setContextMenuPos(null); }}
+                style={{
+                  padding: '6px 16px',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#1e2a4a')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                Agrupar
+              </div>
+            )}
+            {groups.some(g => g.elementIds.some(id => selectedIds.includes(id))) && (
+              <div
+                onClick={() => { onUngroup(); setContextMenuPos(null); }}
+                style={{
+                  padding: '6px 16px',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#1e2a4a')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                Desagrupar
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

@@ -190,5 +190,16 @@
 - Toolbar simplificada a 6 elementos: Seleccionar, Mano, Dibujar, Borrar, Nuevo, Formas y Texto (dropdown)
 - Dropdown "Formas y Texto" con: Rectángulo, Elipse, Línea, Flecha, Texto
 - Eliminados del toolbar: colores, grosor, roughness, undo/redo, guardar/cargar, cuadrícula, mapa, exportar
-- Toolbar usa `width: 200px` con botones en columna
+- Layout horizontal (flex row con wrap), sin ancho fijo
 - Archivos tocados: `src/App.tsx`, `src/components/Toolbar.tsx`
+
+### Menú contextual — agrupar/desagrupar elementos
+- Nuevo tipo `Group` en `src/types/canvas.ts`: grupo con `id` y `elementIds`
+- Nuevo estado `groups` en `src/hooks/useCanvas.ts` con `groupElements()` y `ungroupElements()`
+- Al hacer clic en un elemento agrupado, se seleccionan todos los miembros del grupo
+- Al mover un elemento agrupado, todos los miembros se mueven juntos
+- Al eliminar elementos agrupados, se limpian los grupos (se eliminan si quedan < 2 miembros)
+- Menú contextual en `Canvas.tsx` (click derecho) con opciones Agrupar/Desagrupar
+- Agrupar aparece si hay ≥ 2 elementos seleccionados
+- Desagrupar aparece si algún elemento seleccionado pertenece a un grupo
+- Archivos tocados: `src/types/canvas.ts`, `src/hooks/useCanvas.ts`, `src/components/Canvas.tsx`, `src/App.tsx`

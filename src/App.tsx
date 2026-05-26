@@ -22,6 +22,7 @@ function App() {
     tool, setTool,
     elements, setElements,
     selectedIds, setSelectedIds,
+    groups, groupElements, ungroupElements,
     camera,
     strokeColor,
     strokeWidth,
@@ -73,6 +74,14 @@ function App() {
     setTool('select');
   }, [strokeColor, strokeWidth, roughness, setElements, setTool]);
 
+  const handleGroup = useCallback(() => {
+    groupElements(selectedIds);
+  }, [groupElements, selectedIds]);
+
+  const handleUngroup = useCallback(() => {
+    ungroupElements();
+  }, [ungroupElements]);
+
   const handleSave = useCallback(async () => { await saveFile(elements); }, [elements]);
   const handleLoad = useCallback(async () => {
     const loaded = await loadFile();
@@ -123,6 +132,7 @@ function App() {
           elements={elements}
           drawingElement={drawingElement}
           selectedIds={selectedIds}
+          groups={groups}
           camera={camera}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
@@ -133,6 +143,8 @@ function App() {
           gridEnabled={gridEnabled}
           selectionBox={selectionBox}
           showMinimap={showMinimap}
+          onGroup={handleGroup}
+          onUngroup={handleUngroup}
         />
       </div>
     </div>
