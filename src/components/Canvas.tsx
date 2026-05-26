@@ -214,6 +214,7 @@ export default function Canvas({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const onDown = (e: MouseEvent) => {
+      if (e.button !== 0) return;
       if (tool === 'text') {
         if (textInputPosRef.current) {
           const el = textareaRef.current;
@@ -264,16 +265,15 @@ export default function Canvas({
     if (!div) return;
     const onContext = (e: MouseEvent) => {
       e.preventDefault();
+      e.stopPropagation();
       setContextMenuPos({ x: e.clientX, y: e.clientY });
     };
     const closeMenu = () => setContextMenuPos(null);
     div.addEventListener('contextmenu', onContext);
     window.addEventListener('click', closeMenu, true);
-    window.addEventListener('contextmenu', closeMenu, true);
     return () => {
       div.removeEventListener('contextmenu', onContext);
       window.removeEventListener('click', closeMenu, true);
-      window.removeEventListener('contextmenu', closeMenu, true);
     };
   }, []);
 
