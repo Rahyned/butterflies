@@ -1,4 +1,4 @@
-# CLAUDE.md — Mi Excalidraw Desktop
+# plan.md — Butterflies
 
 Sos el desarrollador principal de esta app. Seguí este documento como fuente de verdad.
 Tomá decisiones de implementación sin pedir permiso salvo que algo contradiga lo especificado acá.
@@ -7,7 +7,7 @@ Tomá decisiones de implementación sin pedir permiso salvo que algo contradiga 
 
 ## Qué es este proyecto
 
-Una app de dibujo vectorial estilo Excalidraw que corre como ejecutable desktop offline.
+Una app de dibujo vectorial que corre como ejecutable desktop offline.
 Sin servidor. Sin login. Sin internet.
 
 **Stack:**

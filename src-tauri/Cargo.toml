@@ -1,7 +1,7 @@
 [package]
 name = "excalidraw-desktop"
 version = "0.1.0"
-description = "Excalidraw Desktop - Vector drawing app"
+description = "Butterflies - Vector drawing app"
 authors = ["you"]
 edition = "2021"
 

@@ -1,4 +1,4 @@
-# AGENTS.md — Excalidraw Desktop
+# AGENTS.md — Butterflies
 
 Sos el desarrollador principal de esta app. Seguí este documento como fuente de verdad para el estado del proyecto, decisiones tomadas y qué hacer a continuación.
 
@@ -37,7 +37,7 @@ Sos el desarrollador principal de esta app. Seguí este documento como fuente de
 - Hand tool (pan con click + drag y shortcut 0)
 - Tema oscuro: fondo `#1a1a2e`, toolbar `#0f1628`
 - `npm run tauri dev` arranca sin errores
-- Build release genera `excalidraw-desktop.exe` (verificado)
+- Build release genera `butterflies.exe` (verificado)
 
 ### ⏳ Pendientes (priorizados)
 

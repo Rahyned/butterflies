@@ -1,6 +1,6 @@
-# Excalidraw Desktop
+# Butterflies
 
-Una app de dibujo vectorial estilo Excalidraw que corre como ejecutable desktop offline. Sin servidor, sin login, sin internet.
+Una app de dibujo vectorial que corre como ejecutable desktop offline. Sin servidor, sin login, sin internet.
 
 Construida con **Tauri 2**, **React 19**, **TypeScript** y **rough.js**.
 
@@ -56,7 +56,7 @@ Construida con **Tauri 2**, **React 19**, **TypeScript** y **rough.js**.
 Usa el diálogo nativo del sistema operativo (Tauri `plugin-dialog`). Los archivos se guardan en formato `.json`.
 
 ### 🎯 Estilo sketch
-Todos los elementos se renderizan con **rough.js** usando una semilla fija por elemento — el dibujo no "tiembla" al re-renderizar.
+Todos los elementos se renderizan con **rough.js** (estilo "dibujado a mano") usando una semilla fija por elemento — el dibujo no "tiembla" al re-renderizar.
 
 ---
 
@@ -73,7 +73,7 @@ Todos los elementos se renderizan con **rough.js** usando una semilla fija por e
 ```bash
 # Clonar
 git clone <repo-url>
-cd excalidraw-desktop
+cd butterflies
 
 # Instalar dependencias
 npm install
@@ -85,7 +85,7 @@ npm run tauri dev
 npm run tauri build
 ```
 
-El ejecutable se genera en `src-tauri/target/release/excalidraw-desktop.exe`.
+El ejecutable se genera en `src-tauri/target/release/butterflies.exe`.
 
 > En Windows con toolchain GNU (mingw64), asegurate de tener `C:\msys64\mingw64\bin` en el PATH para que el linker encuentre `dlltool.exe`. Ver `~/.cargo/config.toml` para la configuración automática.
 
