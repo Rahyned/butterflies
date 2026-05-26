@@ -130,8 +130,7 @@ export function useCanvas() {
     drawingElement.current = null;
     isDrawing.current = false;
     startPoint.current = null;
-    setTool('select');
-  }, [setTool]);
+  }, []);
 
   const handlePointerDown = useCallback((clientX: number, clientY: number, canvasRect: DOMRect) => {
     if (isPanning.current) return;
