@@ -210,3 +210,10 @@
 - Fix: `e.button !== 0` en onDown para ignorar clicks no primarios
 - Fix: `e.stopPropagation()` en el handler de contextmenu + eliminado window.contextmenu close
 - Archivos tocados: `src/components/Canvas.tsx`
+
+### Fix: menú contextual no aparecía en Tauri WebView2
+- Bug: el `contextmenu` event del canvas no llegaba al contenedor (WebView2 nativo intercepta el evento)
+- Fix: agregado listener `contextmenu` directo en el canvas
+- Fix: agregado handler `mousedown button===2` para abrir el menú incluso si WebView2 intercepta el contextmenu event
+- Fix: `minHeight: 30` + fallback text "Seleccioná ≥2 elementos" en el menú para debug visual
+- Archivos tocados: `src/components/Canvas.tsx`

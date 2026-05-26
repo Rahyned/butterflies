@@ -80,10 +80,11 @@ export function useCanvas() {
       }
       case 'eraser': {
         setElements(prev => prev.filter(el => !hitTestElement(el, world)));
+        setTool('select');
         break;
       }
     }
-  }, [tool, strokeColor, fillColor, strokeWidth, roughness]);
+  }, [tool, strokeColor, fillColor, strokeWidth, roughness, setTool]);
 
   const updateDrawing = useCallback((world: Point) => {
     if (!isDrawing.current || !drawingElement.current || !startPoint.current) return;
@@ -129,7 +130,8 @@ export function useCanvas() {
     drawingElement.current = null;
     isDrawing.current = false;
     startPoint.current = null;
-  }, []);
+    setTool('select');
+  }, [setTool]);
 
   const handlePointerDown = useCallback((clientX: number, clientY: number, canvasRect: DOMRect) => {
     if (isPanning.current) return;
