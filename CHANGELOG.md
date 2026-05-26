@@ -203,3 +203,10 @@
 - Agrupar aparece si hay ≥ 2 elementos seleccionados
 - Desagrupar aparece si algún elemento seleccionado pertenece a un grupo
 - Archivos tocados: `src/types/canvas.ts`, `src/hooks/useCanvas.ts`, `src/components/Canvas.tsx`, `src/App.tsx`
+
+### Fix: menú contextual no se veía (se cerraba al instante)
+- Bug: `mousedown` del canvas se disparaba con click derecho e iniciaba tools
+- Bug: `window.addEventListener('contextmenu', closeMenu, true)` cerraba el menú inmediatamente porque el evento burbujeaba del div contenedor a window
+- Fix: `e.button !== 0` en onDown para ignorar clicks no primarios
+- Fix: `e.stopPropagation()` en el handler de contextmenu + eliminado window.contextmenu close
+- Archivos tocados: `src/components/Canvas.tsx`

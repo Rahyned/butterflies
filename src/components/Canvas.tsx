@@ -214,6 +214,10 @@ export default function Canvas({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const onDown = (e: MouseEvent) => {
+      if (e.button === 2) {
+        setContextMenuPos({ x: e.clientX, y: e.clientY });
+        return;
+      }
       if (e.button !== 0) return;
       if (tool === 'text') {
         if (textInputPosRef.current) {
@@ -236,15 +240,22 @@ export default function Canvas({
       onPointerMove(e.clientX, e.clientY, rect);
     };
     const onUp = () => { onPointerUp(); };
+    const onContext = (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setContextMenuPos({ x: e.clientX, y: e.clientY });
+    };
     canvas.addEventListener('mousedown', onDown);
     canvas.addEventListener('mousemove', onMove);
     canvas.addEventListener('mouseup', onUp);
     canvas.addEventListener('mouseleave', onUp);
+    canvas.addEventListener('contextmenu', onContext);
     return () => {
       canvas.removeEventListener('mousedown', onDown);
       canvas.removeEventListener('mousemove', onMove);
       canvas.removeEventListener('mouseup', onUp);
       canvas.removeEventListener('mouseleave', onUp);
+      canvas.removeEventListener('contextmenu', onContext);
     };
   }, [tool, onPointerDown, onPointerMove, onPointerUp, onTextSubmit, getWorldFromScreen]);
 
@@ -380,6 +391,7 @@ export default function Canvas({
             borderRadius: 4,
             padding: '4px 0',
             minWidth: 160,
+            minHeight: 30,
             boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: 13,
@@ -411,6 +423,11 @@ export default function Canvas({
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 Desagrupar
+              </div>
+            )}
+            {selectedIds.length < 2 && !groups.some(g => g.elementIds.some(id => selectedIds.includes(id))) && (
+              <div style={{ padding: '6px 16px', color: '#5a6a8a', fontSize: 11 }}>
+                Seleccioná ≥2 elementos
               </div>
             )}
           </div>
