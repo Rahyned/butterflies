@@ -281,10 +281,10 @@ export default function Canvas({
     };
     const closeMenu = () => setContextMenuPos(null);
     div.addEventListener('contextmenu', onContext);
-    window.addEventListener('click', closeMenu, true);
+    window.addEventListener('click', closeMenu, false);
     return () => {
       div.removeEventListener('contextmenu', onContext);
-      window.removeEventListener('click', closeMenu, true);
+      window.removeEventListener('click', closeMenu);
     };
   }, []);
 
@@ -399,7 +399,7 @@ export default function Canvas({
           }}>
             {selectedIds.length >= 2 && (
               <div
-                onMouseDown={(e) => { if (e.button !== 0) return; e.stopPropagation(); onGroup(); setContextMenuPos(null); }}
+                onClick={() => { onGroup(); setContextMenuPos(null); }}
                 style={{
                   padding: '6px 16px',
                   cursor: 'pointer',
@@ -413,7 +413,7 @@ export default function Canvas({
             )}
             {groups.some(g => g.elementIds.some(id => selectedIds.includes(id))) && (
               <div
-                onMouseDown={(e) => { if (e.button !== 0) return; e.stopPropagation(); onUngroup(); setContextMenuPos(null); }}
+                onClick={() => { onUngroup(); setContextMenuPos(null); }}
                 style={{
                   padding: '6px 16px',
                   cursor: 'pointer',
