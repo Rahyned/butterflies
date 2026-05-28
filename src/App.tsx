@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Canvas from './components/Canvas';
 import Toolbar from './components/Toolbar';
 import { useCanvas } from './hooks/useCanvas';
@@ -47,6 +47,16 @@ function App() {
   } = useCanvas();
 
   const { undo, redo } = useHistory(elements, setElements);
+
+  useEffect(() => {
+    const splash = document.getElementById('splash-overlay');
+    if (!splash) return;
+    const timer = setTimeout(() => {
+      splash.style.opacity = '0';
+      splash.addEventListener('transitionend', () => splash.remove(), { once: true });
+    }, 3500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handlePointerDown = useCallback((clientX: number, clientY: number, rect: DOMRect) => {
     if (isSpacePressed()) { startPan(clientX, clientY); return; }
