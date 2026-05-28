@@ -22,8 +22,8 @@ const isShapeTool = (t: Tool): boolean =>
 
 const btnBase: React.CSSProperties = {
   background: 'transparent',
-  color: '#EAEEEF',
-  border: '1px solid #3a4a7a',
+  color: '#c8d0e0',
+  border: '1px solid #2d3a5a',
   borderRadius: '4px',
   padding: '5px 10px',
   cursor: 'pointer',
@@ -37,17 +37,15 @@ const btnBase: React.CSSProperties = {
 
 const activeBtn: React.CSSProperties = {
   ...btnBase,
-  background: '#EAEEEF',
-  color: '#1F2E5A',
-  border: '1px solid #EAEEEF',
+  background: '#4cc9f0',
+  color: '#1a1a2e',
+  border: '1px solid #4cc9f0',
 };
 
 const dropdownBtn: React.CSSProperties = {
   ...btnBase,
   minWidth: 155,
 };
-
-const sayagataPattern = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cg stroke='rgba(234,238,239,0.06)' fill='none' stroke-width='1'%3E%3Cpath d='M0 0h12v4H4v8H0zM24 24h-12v-4h8v-8h4zM12 12h8V4h-4V0H8v8h4zM12 12H4v8h4v4h8v-8h-4z'/%3E%3C/g%3E%3C/svg%3E";
 
 export default function Toolbar({
   tool, onToolChange,
@@ -108,13 +106,13 @@ export default function Toolbar({
       display: 'flex',
       flexDirection: 'column',
       overflow: 'visible',
-      background: `#1F2E5A url("${sayagataPattern}")`,
-      border: '1px solid #3a4a7a',
+              background: '#0f1628',
+              border: '1px solid #1e2d4a',
       borderRadius: '8px',
       boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
       fontFamily: "'JetBrains Mono', monospace",
       fontSize: '13px',
-      color: '#EAEEEF',
+      color: '#c8d0e0',
     }}>
       {/* Drag handle */}
       <div
@@ -125,9 +123,9 @@ export default function Toolbar({
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
-          borderBottom: '1px solid #3a4a7a',
+          borderBottom: '1px solid #1a2640',
           fontSize: '11px',
-          color: '#8a9ab0',
+          color: '#5a6a8a',
         }}
       >
         <span style={{ fontSize: '14px', lineHeight: '14px' }}>⠿</span>
@@ -180,7 +178,7 @@ export default function Toolbar({
         <div ref={dropdownRef} style={{ position: 'relative' }}>
           <button
             onClick={() => setDropdownOpen(o => !o)}
-            style={currentShape ? { ...dropdownBtn, ...(isShapeTool(tool) ? { borderColor: '#EAEEEF' } : {}) } : dropdownBtn}
+            style={currentShape ? { ...dropdownBtn, ...(isShapeTool(tool) ? { borderColor: '#4cc9f0' } : {}) } : dropdownBtn}
             title="Formas y Texto"
           >
             <span>{currentShape ? `${currentShape.icon} ${currentShape.label}` : '▦ Formas y Texto'}</span>
@@ -193,8 +191,8 @@ export default function Toolbar({
               top: '100%',
               left: 0,
               marginTop: '2px',
-              background: `#1F2E5A url("${sayagataPattern}")`,
-              border: '1px solid #3a4a7a',
+      background: '#0f1628',
+      border: '1px solid #1e2d4a',
               borderRadius: '6px',
               boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
               padding: '4px',

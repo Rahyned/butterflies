@@ -26,6 +26,7 @@ function App() {
     elements, setElements,
     selectedIds, setSelectedIds,
     groups, groupElements, ungroupElements,
+    bringToFront, sendToBack, moveUp, moveDown,
     camera,
     strokeColor,
     strokeWidth,
@@ -61,19 +62,23 @@ function App() {
   }, [rawPointerUp]);
 
   const handleTextSubmit = useCallback((text: string, x: number, y: number, w: number, h: number) => {
-    const el: CanvasElement = {
-      type: 'text',
-      id: generateId(),
-      x, y,
-      width: w,
-      height: h,
-      strokeColor, fillColor: 'transparent',
-      strokeWidth, roughness,
-      opacity: 1, seed: randomSeed(),
-      text, fontSize: 20,
-      fontFamily: "'JetBrains Mono', monospace",
-    };
-    setElements(prev => [...prev, el]);
+    setElements(prev => {
+      const maxZ = prev.length > 0 ? Math.max(...prev.map(el => el.zIndex)) : -1;
+      const el: CanvasElement = {
+        type: 'text',
+        id: generateId(),
+        x, y,
+        width: w,
+        height: h,
+        strokeColor, fillColor: 'transparent',
+        strokeWidth, roughness,
+        opacity: 1, seed: randomSeed(),
+        zIndex: maxZ + 1,
+        text, fontSize: 20,
+        fontFamily: "'JetBrains Mono', monospace",
+      };
+      return [...prev, el];
+    });
     setTool('select');
   }, [strokeColor, strokeWidth, roughness, setElements, setTool]);
 
@@ -119,6 +124,10 @@ function App() {
     onEscape: handleEscape,
     onSpaceDown: handleSpaceDown,
     onSpaceUp: handleSpaceUp,
+    onBringToFront: bringToFront,
+    onSendToBack: sendToBack,
+    onMoveUp: moveUp,
+    onMoveDown: moveDown,
   });
 
   return (
@@ -148,6 +157,10 @@ function App() {
           showMinimap={showMinimap}
           onGroup={handleGroup}
           onUngroup={handleUngroup}
+          onBringToFront={bringToFront}
+          onSendToBack={sendToBack}
+          onMoveUp={moveUp}
+          onMoveDown={moveDown}
         />
       </div>
     </div>

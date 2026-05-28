@@ -97,7 +97,7 @@ export function renderElement(ctx: CanvasRenderingContext2D, el: CanvasElement, 
 
 export function renderSelectionBox(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
   ctx.save();
-  ctx.strokeStyle = '#000000';
+  ctx.strokeStyle = '#4cc9f0';
   ctx.lineWidth = 1.5;
   ctx.setLineDash([4, 4]);
   ctx.strokeRect(x, y, w, h);
@@ -107,7 +107,7 @@ export function renderSelectionBox(ctx: CanvasRenderingContext2D, x: number, y: 
 
 export function renderSelectionHandles(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
   ctx.save();
-  ctx.fillStyle = '#000000';
+  ctx.fillStyle = '#4cc9f0';
   const size = 8;
   const handles: Point[] = [
     { x, y },

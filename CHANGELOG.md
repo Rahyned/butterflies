@@ -236,3 +236,24 @@
 - Fix: cambiado `true` (capture) a `false` (bubble phase) en window.click — ahora onClick del target corre primero, luego closeMenu
 - Menu items vuelven a `onClick` (no onMouseDown)
 - Archivos tocados: `src/components/Canvas.tsx`
+
+## 2026-05-27
+
+### Sistema de capas (zIndex + Painter's Algorithm)
+- Agregado campo `zIndex: number` a `BaseElement` en `src/types/canvas.ts`
+- Nuevas funciones de capas en `src/hooks/useCanvas.ts`:
+  - `bringToFront()`: selección al frente (zIndex = max + 1)
+  - `sendToBack()`: selección al fondo (zIndex = min - 1)
+  - `moveUp()`: sube un lugar (swap zIndex con elemento superior)
+  - `moveDown()`: baja un lugar (swap zIndex con elemento inferior)
+- Elementos nuevos reciben `zIndex` incremental via `getNextZIndex()`
+- Render ordenado por zIndex (ascendente: fondo → frente) en `Canvas.tsx`
+- Hit-testing para selección respeta el orden visual (último zIndex = primero en detectarse)
+- Menú contextual con opciones de capas: Traer al frente, Subir capa, Bajar capa, Enviar al fondo
+- Atajos de teclado en `useKeyboard.ts`:
+  - `Ctrl+]` → Subir capa
+  - `Ctrl+[` → Bajar capa
+  - `Ctrl+Shift+]` → Traer al frente
+  - `Ctrl+Shift+[` → Enviar al fondo
+- Guardado/carga serializa zIndex automáticamente (incluido en JSON)
+- Archivos tocados: `src/types/canvas.ts`, `src/hooks/useCanvas.ts`, `src/hooks/useKeyboard.ts`, `src/components/Canvas.tsx`, `src/App.tsx`

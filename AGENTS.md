@@ -44,6 +44,16 @@ Sos el desarrollador principal de esta app. Seguí este documento como fuente de
 
 _(ninguno — todo implementado)_
 
+### ✅ Implementado (27 mayo 2026)
+
+- Sistema de capas con zIndex explícito en cada `BaseElement`
+- `bringToFront()`, `sendToBack()`, `moveUp()`, `moveDown()` en `useCanvas.ts`
+- Render ordenado por zIndex (Painter's Algorithm)
+- Menú contextual con controles de capa: Traer al frente, Subir capa, Bajar capa, Enviar al fondo
+- Atajos de teclado: `Ctrl+]` / `Ctrl+[` / `Ctrl+Shift+]` / `Ctrl+Shift+[`
+- Elementos nuevos reciben zIndex incremental automáticamente
+- Guardado/carga preserva zIndex (serializado en JSON)
+
 ### Decisiones técnicas tomadas
 
 | Decisión | Razón |

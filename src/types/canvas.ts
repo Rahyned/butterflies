@@ -14,6 +14,7 @@ export type BaseElement = {
   roughness: number;
   opacity: number;
   seed: number;
+  zIndex: number;
 };
 
 export type RectElement   = BaseElement & { type: 'rect' };

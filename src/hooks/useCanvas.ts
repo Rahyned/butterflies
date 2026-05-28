@@ -10,6 +10,11 @@ function randomSeed(): number {
   return Math.floor(Math.random() * 2 ** 15);
 }
 
+function getNextZIndex(elements: CanvasElement[]): number {
+  if (elements.length === 0) return 0;
+  return Math.max(...elements.map(el => el.zIndex)) + 1;
+}
+
 export function useCanvas() {
   const [tool, setTool] = useState<Tool>('select');
   const [elements, setElements] = useState<CanvasElement[]>([]);
@@ -17,7 +22,7 @@ export function useCanvas() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 1 });
 
-  const [strokeColor, setStrokeColor] = useState('#000000');
+  const [strokeColor, setStrokeColor] = useState('#e2e8f0');
   const [fillColor, setFillColor] = useState('transparent');
   const [strokeWidth, setStrokeWidth] = useState(2);
   const [roughness, setRoughness] = useState(1);
@@ -58,7 +63,7 @@ export function useCanvas() {
 
     const base = {
       strokeColor, fillColor, strokeWidth, roughness,
-      opacity: 1, seed: randomSeed(),
+      opacity: 1, seed: randomSeed(), zIndex: getNextZIndex(elements),
     };
 
     switch (tool) {
@@ -83,7 +88,7 @@ export function useCanvas() {
         break;
       }
     }
-  }, [tool, strokeColor, fillColor, strokeWidth, roughness]);
+  }, [tool, strokeColor, fillColor, strokeWidth, roughness, elements]);
 
   const updateDrawing = useCallback((world: Point) => {
     if (!isDrawing.current || !drawingElement.current || !startPoint.current) return;
@@ -160,9 +165,10 @@ export function useCanvas() {
       }
 
       let hitId: string | null = null;
-      for (let i = elements.length - 1; i >= 0; i--) {
-        if (hitTestElement(elements[i], world)) {
-          hitId = elements[i].id;
+      const sortedByZ = [...elements].sort((a, b) => b.zIndex - a.zIndex);
+      for (const el of sortedByZ) {
+        if (hitTestElement(el, world)) {
+          hitId = el.id;
           break;
         }
       }
@@ -397,12 +403,77 @@ export function useCanvas() {
     ));
   }, [selectedIds]);
 
+  const bringToFront = useCallback(() => {
+    if (selectedIds.length === 0) return;
+    setElements(prev => {
+      const maxZ = Math.max(...prev.map(el => el.zIndex));
+      return prev.map(el =>
+        selectedIds.includes(el.id) ? { ...el, zIndex: maxZ + 1 } : el
+      );
+    });
+  }, [selectedIds]);
+
+  const sendToBack = useCallback(() => {
+    if (selectedIds.length === 0) return;
+    setElements(prev => {
+      const minZ = Math.min(...prev.map(el => el.zIndex));
+      return prev.map(el =>
+        selectedIds.includes(el.id) ? { ...el, zIndex: minZ - 1 } : el
+      );
+    });
+  }, [selectedIds]);
+
+  const moveUp = useCallback(() => {
+    if (selectedIds.length === 0) return;
+    setElements(prev => {
+      const sorted = [...prev].sort((a, b) => a.zIndex - b.zIndex);
+      const selected = new Set(selectedIds);
+      for (let i = sorted.length - 1; i >= 0; i--) {
+        const el = sorted[i];
+        if (selected.has(el.id) && i < sorted.length - 1) {
+          const above = sorted[i + 1];
+          if (!selected.has(above.id)) {
+            return prev.map(e => {
+              if (e.id === el.id) return { ...e, zIndex: above.zIndex };
+              if (e.id === above.id) return { ...e, zIndex: el.zIndex };
+              return e;
+            });
+          }
+        }
+      }
+      return prev;
+    });
+  }, [selectedIds]);
+
+  const moveDown = useCallback(() => {
+    if (selectedIds.length === 0) return;
+    setElements(prev => {
+      const sorted = [...prev].sort((a, b) => a.zIndex - b.zIndex);
+      const selected = new Set(selectedIds);
+      for (let i = 0; i < sorted.length; i++) {
+        const el = sorted[i];
+        if (selected.has(el.id) && i > 0) {
+          const below = sorted[i - 1];
+          if (!selected.has(below.id)) {
+            return prev.map(e => {
+              if (e.id === el.id) return { ...e, zIndex: below.zIndex };
+              if (e.id === below.id) return { ...e, zIndex: el.zIndex };
+              return e;
+            });
+          }
+        }
+      }
+      return prev;
+    });
+  }, [selectedIds]);
+
   return {
     tool, setTool,
     elements, setElements,
     selectedIds, setSelectedIds,
     groups, setGroups,
     groupElements, ungroupElements,
+    bringToFront, sendToBack, moveUp, moveDown,
     camera, setCamera,
     strokeColor, setStrokeColor,
     fillColor, setFillColor,

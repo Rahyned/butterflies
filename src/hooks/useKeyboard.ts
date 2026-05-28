@@ -12,11 +12,16 @@ interface KeyboardConfig {
   onEscape: () => void;
   onSpaceDown: () => void;
   onSpaceUp: () => void;
+  onBringToFront: () => void;
+  onSendToBack: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
 }
 
 export function useKeyboard({
   onToolChange, onUndo, onRedo, onSave, onLoad,
   onDelete, onSelectAll, onEscape, onSpaceDown, onSpaceUp,
+  onBringToFront, onSendToBack, onMoveUp, onMoveDown,
 }: KeyboardConfig) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -35,6 +40,18 @@ export function useKeyboard({
       if (e.key === 'Delete' || e.key === 'Backspace') { onDelete(); return; }
 
       if (ctrl) {
+        if (e.code === 'BracketLeft') {
+          e.preventDefault();
+          if (e.shiftKey) onSendToBack();
+          else onMoveDown();
+          return;
+        }
+        if (e.code === 'BracketRight') {
+          e.preventDefault();
+          if (e.shiftKey) onBringToFront();
+          else onMoveUp();
+          return;
+        }
         switch (e.key.toLowerCase()) {
           case 'z':
             e.preventDefault();
@@ -87,5 +104,5 @@ export function useKeyboard({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [onToolChange, onUndo, onRedo, onSave, onLoad, onDelete, onSelectAll, onEscape, onSpaceDown, onSpaceUp]);
+  }, [onToolChange, onUndo, onRedo, onSave, onLoad, onDelete, onSelectAll, onEscape, onSpaceDown, onSpaceUp, onBringToFront, onSendToBack, onMoveUp, onMoveDown]);
 }
