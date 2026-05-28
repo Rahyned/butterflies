@@ -22,7 +22,7 @@ export function useCanvas() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 1 });
 
-  const [strokeColor, setStrokeColor] = useState('#e2e8f0');
+  const [strokeColor, setStrokeColor] = useState('#000000');
   const [fillColor, setFillColor] = useState('transparent');
   const [strokeWidth, setStrokeWidth] = useState(2);
   const [roughness, setRoughness] = useState(1);

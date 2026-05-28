@@ -257,3 +257,28 @@
   - `Ctrl+Shift+[` → Enviar al fondo
 - Guardado/carga serializa zIndex automáticamente (incluido en JSON)
 - Archivos tocados: `src/types/canvas.ts`, `src/hooks/useCanvas.ts`, `src/hooks/useKeyboard.ts`, `src/components/Canvas.tsx`, `src/App.tsx`
+
+## 2026-05-28
+
+### Color scheme: Combinación #4 (Midnight Denim + Cloudy Sky)
+- Fondo de canvas cambiado a Cloudy Sky `#CCDDEA`
+- Interfaz (toolbar, minimap, menú contextual) cambiada a Midnight Denim `#1F2E5A`
+- Cuadrícula ahora usa Midnight Denim con opacidad reducida (15% minor, 25% major) sobre fondo claro
+- Textarea overlay actualizado para coincidir con Midnight Denim
+- Archivos tocados: `src/App.css`, `src/components/Canvas.tsx`, `src/components/Toolbar.tsx`
+
+### Bordes de interfaz cambiados a Cloudy Sky #CCDDEA
+- Todos los bordes de la toolbar (botones, contenedor, drag handle, dropdown) cambiados a `#CCDDEA`
+- Bordes del menú contextual, minimapa y textarea también cambiados a `#CCDDEA`
+- Separador del menú contextual actualizado
+- Archivos tocados: `src/components/Toolbar.tsx`, `src/components/Canvas.tsx`
+
+### Patrón escamas en la toolbar
+- Reemplazado patrón sayagata por patrón de escamas (arcos superpuestos estilo pez/dragón)
+- Color: Cloudy Sky `#CCDDEA` al 8% de opacidad, tile 20×20px
+- Arcos SVG con radio 5px dispuestos en filas escalonadas
+- Archivos tocados: `src/components/Toolbar.tsx`
+
+### Color de trazo default cambiado a oscuro
+- Default stroke color cambiado de `#e2e8f0` (claro) a `#1F2E5A` (midnight denim) para visibilidad sobre fondo Cloudy Sky
+- Archivos tocados: `src/hooks/useCanvas.ts`

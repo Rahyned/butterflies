@@ -31,8 +31,8 @@ interface CanvasProps {
 
 function drawGrid(ctx: CanvasRenderingContext2D, camera: { x: number; y: number; zoom: number }, canvasWidth: number, canvasHeight: number) {
   const gridSize = 40;
-  const minorColor = 'rgba(60, 60, 100, 0.3)';
-  const majorColor = 'rgba(80, 80, 140, 0.4)';
+  const minorColor = 'rgba(31, 46, 90, 0.15)';
+  const majorColor = 'rgba(31, 46, 90, 0.25)';
   const majorEvery = 5;
 
   const left = -camera.x / camera.zoom;
@@ -182,9 +182,9 @@ export default function Canvas({
     const ctx = mCanvas.getContext('2d')!;
     ctx.scale(dpr, dpr);
 
-    ctx.fillStyle = 'rgba(15, 22, 40, 0.9)';
+    ctx.fillStyle = 'rgba(31, 46, 90, 0.9)';
     ctx.fillRect(0, 0, mw, mh);
-    ctx.strokeStyle = '#2d3a5a';
+    ctx.strokeStyle = '#CCDDEA';
     ctx.lineWidth = 1;
     ctx.strokeRect(0, 0, mw, mh);
 
@@ -325,7 +325,7 @@ export default function Canvas({
             position: 'absolute',
             top: 0,
             left: 0,
-            background: '#1a1a2e',
+            background: '#CCDDEA',
           }}
         />
         {showMinimap && (
@@ -372,8 +372,8 @@ export default function Canvas({
               el.style.height = el.scrollHeight + 'px';
             }}
             style={{
-              background: 'rgba(26, 26, 46, 0.9)',
-              border: '1px dashed #4cc9f0',
+              background: 'rgba(31, 46, 90, 0.6)',
+              border: '1px solid #CCDDEA',
               color: '#e2e8f0',
               fontFamily: 'monospace',
               fontSize: '20px',
@@ -392,8 +392,8 @@ export default function Canvas({
             left: contextMenuPos.x,
             top: contextMenuPos.y,
             zIndex: 10000,
-            background: '#0f1628',
-            border: '1px solid #2d3a5a',
+            background: '#1F2E5A',
+            border: '1px solid #CCDDEA',
             borderRadius: 4,
             padding: '4px 0',
             minWidth: 170,
@@ -424,7 +424,7 @@ export default function Canvas({
             )}
             {selectedIds.length >= 1 && (
               <>
-                <div style={{ height: 1, background: '#2d3a5a', margin: '4px 0' }} />
+                <div style={{ height: 1, background: '#CCDDEA', margin: '4px 0' }} />
                 <div
                   onClick={() => { onBringToFront(); setContextMenuPos(null); }}
                   style={{ padding: '6px 16px', cursor: 'pointer', userSelect: 'none' }}

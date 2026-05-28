@@ -23,7 +23,7 @@ const isShapeTool = (t: Tool): boolean =>
 const btnBase: React.CSSProperties = {
   background: 'transparent',
   color: '#c8d0e0',
-  border: '1px solid #2d3a5a',
+  border: '1px solid #CCDDEA',
   borderRadius: '4px',
   padding: '5px 10px',
   cursor: 'pointer',
@@ -39,7 +39,7 @@ const activeBtn: React.CSSProperties = {
   ...btnBase,
   background: '#4cc9f0',
   color: '#1a1a2e',
-  border: '1px solid #4cc9f0',
+  border: '1px solid #CCDDEA',
 };
 
 const dropdownBtn: React.CSSProperties = {
@@ -106,10 +106,9 @@ export default function Toolbar({
       display: 'flex',
       flexDirection: 'column',
       overflow: 'visible',
-              background: '#0f1628',
-              border: '1px solid #1e2d4a',
+      background: '#1F2E5A',
+      border: '1px solid #CCDDEA',
       borderRadius: '8px',
-      boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
       fontFamily: "'JetBrains Mono', monospace",
       fontSize: '13px',
       color: '#c8d0e0',
@@ -123,9 +122,9 @@ export default function Toolbar({
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
-          borderBottom: '1px solid #1a2640',
+          borderBottom: '1px solid #CCDDEA',
           fontSize: '11px',
-          color: '#5a6a8a',
+          color: '#CCDDEA',
         }}
       >
         <span style={{ fontSize: '14px', lineHeight: '14px' }}>⠿</span>
@@ -178,7 +177,7 @@ export default function Toolbar({
         <div ref={dropdownRef} style={{ position: 'relative' }}>
           <button
             onClick={() => setDropdownOpen(o => !o)}
-            style={currentShape ? { ...dropdownBtn, ...(isShapeTool(tool) ? { borderColor: '#4cc9f0' } : {}) } : dropdownBtn}
+            style={dropdownBtn}
             title="Formas y Texto"
           >
             <span>{currentShape ? `${currentShape.icon} ${currentShape.label}` : '▦ Formas y Texto'}</span>
@@ -191,8 +190,8 @@ export default function Toolbar({
               top: '100%',
               left: 0,
               marginTop: '2px',
-      background: '#0f1628',
-      border: '1px solid #1e2d4a',
+      background: '#1F2E5A',
+      border: '1px solid #CCDDEA',
               borderRadius: '6px',
               boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
               padding: '4px',
