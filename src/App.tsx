@@ -17,7 +17,10 @@ function randomSeed(): number {
 }
 
 function App() {
-  const [toolbarPos, setToolbarPos] = useState({ x: 12, y: 12 });
+  const [toolbarPos, setToolbarPos] = useState(() => ({
+    x: Math.max(0, Math.round((window.innerWidth - 660) / 2)),
+    y: 40,
+  }));
   const {
     tool, setTool,
     elements, setElements,

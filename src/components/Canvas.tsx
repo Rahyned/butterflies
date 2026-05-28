@@ -27,8 +27,8 @@ interface CanvasProps {
 
 function drawGrid(ctx: CanvasRenderingContext2D, camera: { x: number; y: number; zoom: number }, canvasWidth: number, canvasHeight: number) {
   const gridSize = 40;
-  const minorColor = 'rgba(60, 60, 100, 0.3)';
-  const majorColor = 'rgba(80, 80, 140, 0.4)';
+  const gridColor = 'rgba(31, 46, 90, 0.12)';
+  const majorColor = 'rgba(31, 46, 90, 0.22)';
   const majorEvery = 5;
 
   const left = -camera.x / camera.zoom;
@@ -46,8 +46,8 @@ function drawGrid(ctx: CanvasRenderingContext2D, camera: { x: number; y: number;
   ctx.beginPath();
   for (let x = startX; x <= right; x += gridSize) {
     const isMajor = (Math.round(x / gridSize) % majorEvery) === 0;
-    ctx.strokeStyle = isMajor ? majorColor : minorColor;
-    ctx.lineWidth = isMajor ? 1 : 0.5;
+    ctx.strokeStyle = isMajor ? majorColor : gridColor;
+    ctx.lineWidth = isMajor ? 1.2 : 0.5;
     ctx.beginPath();
     ctx.moveTo(x, top);
     ctx.lineTo(x, bottom);
@@ -55,12 +55,28 @@ function drawGrid(ctx: CanvasRenderingContext2D, camera: { x: number; y: number;
   }
   for (let y = startY; y <= bottom; y += gridSize) {
     const isMajor = (Math.round(y / gridSize) % majorEvery) === 0;
-    ctx.strokeStyle = isMajor ? majorColor : minorColor;
-    ctx.lineWidth = isMajor ? 1 : 0.5;
+    ctx.strokeStyle = isMajor ? majorColor : gridColor;
+    ctx.lineWidth = isMajor ? 1.2 : 0.5;
     ctx.beginPath();
     ctx.moveTo(left, y);
     ctx.lineTo(right, y);
     ctx.stroke();
+  }
+
+  const halfGrid = gridSize / 2;
+  for (let x = startX; x <= right; x += gridSize) {
+    for (let y = startY; y <= bottom; y += gridSize) {
+      ctx.strokeStyle = 'rgba(31, 46, 90, 0.06)';
+      ctx.lineWidth = 0.3;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + halfGrid, y + halfGrid);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x + gridSize, y);
+      ctx.lineTo(x + halfGrid, y + halfGrid);
+      ctx.stroke();
+    }
   }
 
   ctx.restore();
@@ -177,9 +193,9 @@ export default function Canvas({
     const ctx = mCanvas.getContext('2d')!;
     ctx.scale(dpr, dpr);
 
-    ctx.fillStyle = 'rgba(15, 22, 40, 0.9)';
+    ctx.fillStyle = '#1F2E5A';
     ctx.fillRect(0, 0, mw, mh);
-    ctx.strokeStyle = '#2d3a5a';
+    ctx.strokeStyle = '#3a4a7a';
     ctx.lineWidth = 1;
     ctx.strokeRect(0, 0, mw, mh);
 
@@ -200,7 +216,7 @@ export default function Canvas({
     const vpW = (window.innerWidth / camera.zoom) * scale;
     const vpH = (window.innerHeight / camera.zoom) * scale;
 
-    ctx.strokeStyle = '#4cc9f0';
+    ctx.strokeStyle = '#000000';
     ctx.lineWidth = 1.5;
     ctx.strokeRect(vpLeft, vpTop, vpW, vpH);
   }, [elements, camera, showMinimap]);
@@ -319,7 +335,7 @@ export default function Canvas({
             position: 'absolute',
             top: 0,
             left: 0,
-            background: '#1a1a2e',
+            background: '#EAEEEF',
           }}
         />
         {showMinimap && (
@@ -366,9 +382,9 @@ export default function Canvas({
               el.style.height = el.scrollHeight + 'px';
             }}
             style={{
-              background: 'rgba(26, 26, 46, 0.9)',
-              border: '1px dashed #4cc9f0',
-              color: '#e2e8f0',
+              background: 'rgba(31, 46, 90, 0.9)',
+              border: '1px dashed #EAEEEF',
+              color: '#EAEEEF',
               fontFamily: 'monospace',
               fontSize: '20px',
               padding: '4px',
@@ -386,16 +402,9 @@ export default function Canvas({
             left: contextMenuPos.x,
             top: contextMenuPos.y,
             zIndex: 10000,
-            background: '#0f1628',
-            border: '1px solid #2d3a5a',
-            borderRadius: 4,
-            padding: '4px 0',
-            minWidth: 160,
-            minHeight: 30,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 13,
-            color: '#e2e8f0',
+            background: '#1F2E5A',
+            border: '1px solid #3a4a7a',
+            color: '#EAEEEF',
           }}>
             {selectedIds.length >= 2 && (
               <div
@@ -405,7 +414,7 @@ export default function Canvas({
                   cursor: 'pointer',
                   userSelect: 'none',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#1e2a4a')}
+                onMouseEnter={e => (e.currentTarget.style.background = '#3a4a7a')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 Agrupar
@@ -419,14 +428,14 @@ export default function Canvas({
                   cursor: 'pointer',
                   userSelect: 'none',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#1e2a4a')}
+                onMouseEnter={e => (e.currentTarget.style.background = '#3a4a7a')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 Desagrupar
               </div>
             )}
             {selectedIds.length < 2 && !groups.some(g => g.elementIds.some(id => selectedIds.includes(id))) && (
-              <div style={{ padding: '6px 16px', color: '#5a6a8a', fontSize: 11 }}>
+              <div style={{ padding: '6px 16px', color: '#8a9ab0', fontSize: 11 }}>
                 Seleccioná ≥2 elementos
               </div>
             )}

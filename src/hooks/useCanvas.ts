@@ -17,7 +17,7 @@ export function useCanvas() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 1 });
 
-  const [strokeColor, setStrokeColor] = useState('#e2e8f0');
+  const [strokeColor, setStrokeColor] = useState('#000000');
   const [fillColor, setFillColor] = useState('transparent');
   const [strokeWidth, setStrokeWidth] = useState(2);
   const [roughness, setRoughness] = useState(1);
@@ -80,11 +80,10 @@ export function useCanvas() {
       }
       case 'eraser': {
         setElements(prev => prev.filter(el => !hitTestElement(el, world)));
-        setTool('select');
         break;
       }
     }
-  }, [tool, strokeColor, fillColor, strokeWidth, roughness, setTool]);
+  }, [tool, strokeColor, fillColor, strokeWidth, roughness]);
 
   const updateDrawing = useCallback((world: Point) => {
     if (!isDrawing.current || !drawingElement.current || !startPoint.current) return;
@@ -275,6 +274,10 @@ export function useCanvas() {
     }
 
     const world = getWorldCoords(clientX, clientY, canvasRect);
+    if (isDrawing.current && !drawingElement.current) {
+      setElements(prev => prev.filter(el => !hitTestElement(el, world)));
+      return;
+    }
     updateDrawing(world);
   }, [getWorldCoords, updateDrawing]);
 
@@ -321,7 +324,7 @@ export function useCanvas() {
     }
 
     finishDrawing();
-  }, [finishDrawing]);
+  }, [finishDrawing, elements, setSelectedIds, setSelectionBox]);
 
   const handleWheel = useCallback((deltaY: number, ctrlKey: boolean, clientX: number, clientY: number, canvasRect: DOMRect) => {
     if (ctrlKey) {
@@ -417,20 +420,32 @@ export function useCanvas() {
   };
 }
 
+function distToSegmentSq(p: Point, a: Point, b: Point): number {
+  const abx = b.x - a.x;
+  const aby = b.y - a.y;
+  const len2 = abx * abx + aby * aby;
+  if (len2 === 0) return (p.x - a.x) ** 2 + (p.y - a.y) ** 2;
+  let t = ((p.x - a.x) * abx + (p.y - a.y) * aby) / len2;
+  t = Math.max(0, Math.min(1, t));
+  return (p.x - (a.x + t * abx)) ** 2 + (p.y - (a.y + t * aby)) ** 2;
+}
+
 function hitTestElement(el: CanvasElement, point: Point): boolean {
   if ('points' in el && el.points && el.points.length > 0) {
-    const xs = el.points.map(p => p.x);
-    const ys = el.points.map(p => p.y);
+    const pts = el.points;
+    if (pts.length === 2) {
+      return distToSegmentSq(point, pts[0], pts[1]) < 100;
+    }
+    for (const p of pts) {
+      if (Math.hypot(point.x - p.x, point.y - p.y) < 10) return true;
+    }
+    const xs = pts.map(p => p.x);
+    const ys = pts.map(p => p.y);
     const minX = Math.min(...xs);
     const maxX = Math.max(...xs);
     const minY = Math.min(...ys);
     const maxY = Math.max(...ys);
-
-    if (point.x >= minX - 5 && point.x <= maxX + 5 && point.y >= minY - 5 && point.y <= maxY + 5) {
-      for (const p of el.points) {
-        if (Math.hypot(point.x - p.x, point.y - p.y) < 10) return true;
-      }
-    }
+    if (point.x >= minX - 5 && point.x <= maxX + 5 && point.y >= minY - 5 && point.y <= maxY + 5) return true;
     return false;
   }
   return point.x >= el.x && point.x <= el.x + el.width && point.y >= el.y && point.y <= el.y + el.height;

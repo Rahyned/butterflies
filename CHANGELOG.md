@@ -232,6 +232,7 @@
 - Archivos tocados: `src/hooks/useCanvas.ts`
 
 ### Fix: Agrupar no funcionaba
-- Bug: `window.addEventListener('click', closeMenu, true)` en fase capture se disparaba ANTES que el `onClick` de React en los items del menú contextual, probablemente `onGroup()` nunca se ejecutaba porque el menú se cerraba/cambiaba antes
-- Fix: cambiado de `onClick` a `onMouseDown` con `e.stopPropagation()` en los items del menú, `onGroup()` se ejecuta antes del capture click de window
+- Bug: `window.addEventListener('click', closeMenu, true)` en fase capture se disparaba ANTES que el `onClick` de React en los items del menú contextual, `onGroup()` nunca se ejecutaba
+- Fix: cambiado `true` (capture) a `false` (bubble phase) en window.click — ahora onClick del target corre primero, luego closeMenu
+- Menu items vuelven a `onClick` (no onMouseDown)
 - Archivos tocados: `src/components/Canvas.tsx`
