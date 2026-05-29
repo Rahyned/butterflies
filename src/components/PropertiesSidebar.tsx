@@ -96,7 +96,7 @@ export default function PropertiesSidebar({ element, onUpdate, onClose }: Proper
     <div style={{
       position: 'fixed',
       right: 0,
-      top: 80,
+      top: 110,
       width: 220,
       maxHeight: 'calc(100vh - 180px)',
       height: 'auto',
@@ -146,7 +146,7 @@ export default function PropertiesSidebar({ element, onUpdate, onClose }: Proper
           </div>
 
           <div>
-            <div style={labelStyle}>Familia</div>
+            <div style={labelStyle}>Fuente</div>
             <select
               value={element.fontFamily}
               onChange={e => handleChange({ fontFamily: e.target.value })}
@@ -159,7 +159,7 @@ export default function PropertiesSidebar({ element, onUpdate, onClose }: Proper
           </div>
 
           <div>
-            <div style={labelStyle}>Peso</div>
+            <div style={labelStyle}>Grosor</div>
             <select
               value={element.fontWeight || '400'}
               onChange={e => handleChange({ fontWeight: e.target.value })}
