@@ -84,7 +84,7 @@ export default function HamburgerMenu({ onNew, onSave, onExport, onResetPosition
           cursor: 'grab', fontSize: '20px', lineHeight: '20px',
           padding: '6px 10px', borderRadius: '6px',
           display: 'inline-block',
-          background: open ? 'rgba(31,46,90,0.9)' : 'rgba(31,46,90,0.7)',
+          background: open ? '#1F2E5A' : '#1F2E5A',
           border: '1px solid #CCDDEA',
           color: '#CCDDEA',
         }}

@@ -75,7 +75,7 @@ export default function ActionButtons({
         alignItems: 'center',
         gap: '6px',
         padding: '6px 10px',
-        background: 'rgba(31,46,90,0.7)',
+        background: '#1F2E5A',
         border: '1px solid #CCDDEA',
         borderRadius: '8px',
       }}
