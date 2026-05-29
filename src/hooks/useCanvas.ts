@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CanvasElement, Tool, Point, Group } from '../types/canvas';
 import { getElementBounds } from '../utils/hitTest';
+import { measureTextHeight } from '../utils/renderer';
 
 function generateId(): string {
   return Math.random().toString(36).substring(2, 11);
@@ -240,13 +241,16 @@ export function useCanvas() {
       if (newW < 0) { newX = newX + newW; newW = -newW; }
       if (newH < 0) { newY = newY + newH; newH = -newH; }
 
-      setElements(prev => prev.map(e => e.id === el.id ? {
-        ...e,
-        x: newX,
-        y: newY,
-        width: Math.max(newW, 5),
-        height: Math.max(newH, 5),
-      } : e));
+      setElements(prev => prev.map(e => {
+        if (e.id !== el.id) return e;
+        const w = Math.max(newW, 5);
+        if (e.type === 'text') {
+          const te = e as CanvasElement & { type: 'text' };
+          const h = measureTextHeight(te.text, w, te.fontSize, te.fontFamily);
+          return { ...e, x: newX, y: newY, width: w, height: h };
+        }
+        return { ...e, x: newX, y: newY, width: w, height: Math.max(newH, 5) };
+      }));
       return;
     }
 

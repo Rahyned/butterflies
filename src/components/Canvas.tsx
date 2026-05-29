@@ -230,7 +230,7 @@ export default function Canvas({
           const el = textareaRef.current;
           if (el && el.value.trim()) {
             const world = getWorldFromScreen(textInputPosRef.current.x, textInputPosRef.current.y);
-            onTextSubmit(el.value, world.x, world.y, el.offsetWidth, el.offsetHeight);
+            onTextSubmit(el.value, world.x, world.y, el.offsetWidth / camera.zoom, el.offsetHeight / camera.zoom);
           }
           setTextInputPos(null);
         } else {
@@ -357,7 +357,7 @@ export default function Canvas({
                 const el = textareaRef.current;
                 if (el && el.value.trim() && textInputPos) {
                   const world = getWorldFromScreen(textInputPos.x, textInputPos.y);
-                  onTextSubmit(el.value, world.x, world.y, el.offsetWidth, el.offsetHeight);
+                  onTextSubmit(el.value, world.x, world.y, el.offsetWidth / camera.zoom, el.offsetHeight / camera.zoom);
                 }
                 setTextInputPos(null);
               }

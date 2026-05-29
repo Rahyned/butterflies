@@ -1,6 +1,26 @@
 import type { RoughCanvas } from 'roughjs/bin/canvas';
 import type { CanvasElement, Point } from '../types/canvas';
 
+export function measureTextHeight(text: string, width: number, fontSize: number, fontFamily: string): number {
+  const ctx = document.createElement('canvas').getContext('2d')!;
+  ctx.font = `${fontSize}px ${fontFamily}`;
+  const lineHeight = fontSize * 1.2;
+  const words = text.split(' ');
+  let line = '';
+  let totalLines = 1;
+  for (const word of words) {
+    const testLine = line ? line + ' ' + word : word;
+    const m = ctx.measureText(testLine);
+    if (m.width > width && line) {
+      totalLines++;
+      line = word;
+    } else {
+      line = testLine;
+    }
+  }
+  return Math.max(totalLines * lineHeight, lineHeight);
+}
+
 export function renderElement(ctx: CanvasRenderingContext2D, el: CanvasElement, rc: RoughCanvas, isDrawing = false) {
   const opts: Record<string, unknown> = {
     seed: el.seed,

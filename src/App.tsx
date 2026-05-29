@@ -5,6 +5,7 @@ import { useCanvas } from './hooks/useCanvas';
 import { useHistory } from './hooks/useHistory';
 import { useKeyboard } from './hooks/useKeyboard';
 import { saveFile, loadFile } from './utils/fileIO';
+import { measureTextHeight } from './utils/renderer';
 import type { CanvasElement } from './types/canvas';
 import './App.css';
 
@@ -71,21 +72,27 @@ function App() {
     rawPointerUp();
   }, [rawPointerUp]);
 
-  const handleTextSubmit = useCallback((text: string, x: number, y: number, w: number, h: number) => {
+  const handleTextSubmit = useCallback((text: string, x: number, y: number, w: number, _h: number) => {
+    const fontSize = 20;
+    const fontFamily = "'JetBrains Mono', monospace";
+    const minW = 50;
+    const worldW = Math.max(w, minW);
+    const worldH = measureTextHeight(text, worldW, fontSize, fontFamily);
+
     setElements(prev => {
       const maxZ = prev.length > 0 ? Math.max(...prev.map(el => el.zIndex)) : -1;
       const el: CanvasElement = {
         type: 'text',
         id: generateId(),
         x, y,
-        width: w,
-        height: h,
+        width: worldW,
+        height: worldH,
         strokeColor, fillColor: 'transparent',
         strokeWidth, roughness,
         opacity: 1, seed: randomSeed(),
         zIndex: maxZ + 1,
-        text, fontSize: 20,
-        fontFamily: "'JetBrains Mono', monospace",
+        text, fontSize,
+        fontFamily,
       };
       return [...prev, el];
     });

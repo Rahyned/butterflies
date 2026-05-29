@@ -282,3 +282,17 @@
 ### Color de trazo default cambiado a oscuro
 - Default stroke color cambiado de `#e2e8f0` (claro) a `#1F2E5A` (midnight denim) para visibilidad sobre fondo Cloudy Sky
 - Archivos tocados: `src/hooks/useCanvas.ts`
+
+## 2026-05-28
+
+### Bugfix: Text tool se achicaba con zoom ≠ 1
+- `Canvas.tsx`: `offsetWidth`/`offsetHeight` del textarea ahora se dividen por `camera.zoom` al crear el `TextElement`, corrigiendo que el texto se viera más chico o más grande según el zoom
+- `App.tsx` (`handleTextSubmit`): ahora mide el texto real con `ctx.measureText()` simulando word wrap para calcular `width`/`height` exactos del contenido, en vez de usar el tamaño arbitrario del textarea
+- Archivos tocados: `src/components/Canvas.tsx`, `src/App.tsx`
+
+### Fix: hitbox de texto editable más chica que el contenido
+- Creado `measureTextHeight()` en `src/utils/renderer.ts`: función pura que calcula la altura real del texto con word wrap dado `(text, width, fontSize, fontFamily)`
+- `src/utils/hitTest.ts` (`getElementBounds`): para `TextElement`, calcula la altura real con `measureTextHeight()` dinámicamente en vez de usar `el.height`, garantizando que la hitbox de selección y los handles siempre rodeen al contenido completo
+- `src/hooks/useCanvas.ts` (resize): al redimensionar un `TextElement`, el alto se recalcula automáticamente con `measureTextHeight()` según el nuevo ancho; solo el ancho es editable
+- `src/App.tsx` (`handleTextSubmit`): reemplazada lógica inline por `measureTextHeight()`
+- Archivos tocados: `src/utils/renderer.ts`, `src/utils/hitTest.ts`, `src/hooks/useCanvas.ts`, `src/App.tsx`
