@@ -96,7 +96,7 @@ export default function PropertiesSidebar({ element, onUpdate, onClose }: Proper
     <div style={{
       position: 'fixed',
       right: 0,
-      top: 110,
+      top: 140,
       width: 220,
       maxHeight: 'calc(100vh - 180px)',
       height: 'auto',
