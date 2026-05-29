@@ -316,3 +316,12 @@
 - Nuevo ítem en dropdown del ☰ que resetea toolbar, hamburger y action buttons a sus posiciones iniciales
 - `handleResetPositions` en `App.tsx` setea los 3 estados a sus valores de origen
 - Archivos tocados: `src/components/HamburgerMenu.tsx`, `src/App.tsx`
+
+### Sidebar de propiedades para texto
+- Creado `src/components/PropertiesSidebar.tsx`: panel lateral derecho (220px) que aparece al seleccionar un TextElement
+- Controles: color (input type=color), tamaño (number 8-120), familia (select con 7 fuentes), peso (Normal/Negrita)
+- Al modificar cualquier propiedad, se recalcula `height` del texto con `measureTextHeight()` automáticamente
+- Agregado `fontWeight?: string` a `TextElement` en types/canvas.ts (opcional, compatibilidad retroactiva)
+- `renderer.ts`: `ctx.font` usa fontWeight, `measureTextHeight` acepta fontWeight opcional
+- Sidebar se cierra al hacer clic en ✕ o al cambiar selección (Escape, click en vacío, etc.)
+- Archivos tocados: `src/types/canvas.ts`, `src/utils/renderer.ts`, `src/components/PropertiesSidebar.tsx`, `src/App.tsx`

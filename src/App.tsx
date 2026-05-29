@@ -221,13 +221,11 @@ function App() {
           onMoveUp={moveUp}
           onMoveDown={moveDown}
         />
-        {selectedTextElement && (
-          <PropertiesSidebar
-            element={selectedTextElement}
-            onUpdate={handleUpdateTextElement}
-            onClose={() => setSelectedIds([])}
-          />
-        )}
+        <PropertiesSidebar
+          element={selectedTextElement}
+          onUpdate={handleUpdateTextElement}
+          onClose={() => setSelectedIds([])}
+        />
       </div>
     </div>
   );
