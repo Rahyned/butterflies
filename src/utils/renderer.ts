@@ -1,9 +1,9 @@
 import type { RoughCanvas } from 'roughjs/bin/canvas';
 import type { CanvasElement, Point } from '../types/canvas';
 
-export function measureTextHeight(text: string, width: number, fontSize: number, fontFamily: string): number {
+export function measureTextHeight(text: string, width: number, fontSize: number, fontFamily: string, fontWeight = '400'): number {
   const ctx = document.createElement('canvas').getContext('2d')!;
-  ctx.font = `${fontSize}px ${fontFamily}`;
+  ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
   const lineHeight = fontSize * 1.2;
   const words = text.split(' ');
   let line = '';
@@ -86,7 +86,7 @@ export function renderElement(ctx: CanvasRenderingContext2D, el: CanvasElement, 
       break;
     case 'text':
       ctx.save();
-      ctx.font = `${el.fontSize}px ${el.fontFamily}`;
+      ctx.font = `${el.fontWeight || '400'} ${el.fontSize}px ${el.fontFamily}`;
       ctx.fillStyle = el.strokeColor;
       ctx.globalAlpha = el.opacity;
       ctx.textBaseline = 'top';

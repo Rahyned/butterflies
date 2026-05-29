@@ -21,7 +21,7 @@ export type RectElement   = BaseElement & { type: 'rect' };
 export type EllipseElement = BaseElement & { type: 'ellipse' };
 export type LineElement   = BaseElement & { type: 'line'; points: Point[] };
 export type ArrowElement  = BaseElement & { type: 'arrow'; points: Point[] };
-export type TextElement   = BaseElement & { type: 'text'; text: string; fontSize: number; fontFamily: string };
+export type TextElement   = BaseElement & { type: 'text'; text: string; fontSize: number; fontFamily: string; fontWeight?: string };
 export type FreedrawElement = BaseElement & { type: 'freedraw'; points: Point[] };
 
 export type CanvasElement =

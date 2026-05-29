@@ -305,3 +305,14 @@
 - `Toolbar.tsx`: simplificada — solo tools + shapes dropdown, sin hamburger ni action buttons. Props reducidas a `tool`, `onToolChange`, `position`, `onPositionChange`
 - `App.tsx`: renderiza los 3 widgets independientes con el mismo `top: 40` (mismo spacing que toolbar tiene con borde superior)
 - Archivos tocados: `src/components/HamburgerMenu.tsx`, `src/components/ActionButtons.tsx`, `src/components/Toolbar.tsx`, `src/App.tsx`, `CHANGELOG.md`
+
+### HamburgerMenu y ActionButtons ahora draggables
+- Agregados props `position`/`onPositionChange` a ambos widgets
+- Drag handle con refs y window mousemove/mouseup listeners (mismo patrón que toolbar)
+- ActionButtons cambió de `right` a `left` para que el drag funcione sin depender del viewport width
+- Archivos tocados: `src/components/HamburgerMenu.tsx`, `src/components/ActionButtons.tsx`, `src/App.tsx`
+
+### ↺ Reset posiciones en menú hamburger
+- Nuevo ítem en dropdown del ☰ que resetea toolbar, hamburger y action buttons a sus posiciones iniciales
+- `handleResetPositions` en `App.tsx` setea los 3 estados a sus valores de origen
+- Archivos tocados: `src/components/HamburgerMenu.tsx`, `src/App.tsx`

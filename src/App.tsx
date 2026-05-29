@@ -6,9 +6,10 @@ import ActionButtons from './components/ActionButtons';
 import { useCanvas } from './hooks/useCanvas';
 import { useHistory } from './hooks/useHistory';
 import { useKeyboard } from './hooks/useKeyboard';
+import PropertiesSidebar from './components/PropertiesSidebar';
 import { saveFile, loadFile, exportPNG } from './utils/fileIO';
 import { measureTextHeight } from './utils/renderer';
-import type { CanvasElement } from './types/canvas';
+import type { CanvasElement, TextElement } from './types/canvas';
 import './App.css';
 
 function generateId(): string {
@@ -100,6 +101,7 @@ function App() {
         zIndex: maxZ + 1,
         text, fontSize,
         fontFamily,
+        fontWeight: '400',
       };
       return [...prev, el];
     });
@@ -134,6 +136,15 @@ function App() {
     setElements([]);
     setSelectedIds([]);
   }, [setElements, setSelectedIds]);
+
+  const selectedTextElement: TextElement | null =
+    selectedIds.length === 1
+      ? (elements.find(el => el.id === selectedIds[0] && el.type === 'text') as TextElement | undefined) ?? null
+      : null;
+
+  const handleUpdateTextElement = useCallback((id: string, partial: Partial<TextElement>) => {
+    setElements(prev => prev.map(el => el.id === id ? { ...el, ...partial } as CanvasElement : el));
+  }, [setElements]);
 
   const handleEscape = useCallback(() => {
     setSelectedIds([]);
@@ -210,6 +221,13 @@ function App() {
           onMoveUp={moveUp}
           onMoveDown={moveDown}
         />
+        {selectedTextElement && (
+          <PropertiesSidebar
+            element={selectedTextElement}
+            onUpdate={handleUpdateTextElement}
+            onClose={() => setSelectedIds([])}
+          />
+        )}
       </div>
     </div>
   );
