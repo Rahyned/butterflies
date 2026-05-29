@@ -83,12 +83,11 @@ export default function PropertiesSidebar({ element, onUpdate, onClose }: Proper
           alignItems: 'center',
           justifyContent: 'center',
           color: '#CCDDEA',
-          fontSize: '16px',
+          fontSize: '14px',
           fontFamily: "'JetBrains Mono', monospace",
-          letterSpacing: 1,
         }}
         title="Propiedades de texto"
-      >[&lt;</div>
+      >◀</div>
     );
   }
 
