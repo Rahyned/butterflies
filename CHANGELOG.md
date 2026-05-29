@@ -325,3 +325,9 @@
 - `renderer.ts`: `ctx.font` usa fontWeight, `measureTextHeight` acepta fontWeight opcional
 - Sidebar se cierra al hacer clic en ✕ o al cambiar selección (Escape, click en vacío, etc.)
 - Archivos tocados: `src/types/canvas.ts`, `src/utils/renderer.ts`, `src/components/PropertiesSidebar.tsx`, `src/App.tsx`
+
+### Sidebar colapsable [<] + auto-open
+- Sidebar ahora siempre se renderiza: colapsada muestra un tab `[<]` a la derecha, click lo expande
+- Se abre automáticamente al seleccionar un TextElement
+- El tab colapsado está en `top: 180` para no tapar los action buttons de arriba a la derecha
+- Archivos tocados: `src/components/PropertiesSidebar.tsx`, `src/App.tsx`
