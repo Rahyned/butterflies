@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useRef } from 'react';
+
 interface ActionButtonsProps {
   onUndo: () => void;
   onRedo: () => void;
@@ -5,6 +7,8 @@ interface ActionButtonsProps {
   onGridToggle: () => void;
   showMinimap: boolean;
   onMapToggle: () => void;
+  position: { x: number; y: number };
+  onPositionChange: (pos: { x: number; y: number }) => void;
 }
 
 const btnBase: React.CSSProperties = {
@@ -29,22 +33,53 @@ const activeBtn: React.CSSProperties = {
 
 export default function ActionButtons({
   onUndo, onRedo, gridEnabled, onGridToggle, showMinimap, onMapToggle,
+  position, onPositionChange,
 }: ActionButtonsProps) {
+  const dragging = useRef(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    dragging.current = true;
+    dragOffset.current = { x: e.clientX - position.x, y: e.clientY - position.y };
+  }, [position]);
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      if (!dragging.current) return;
+      onPositionChange({
+        x: e.clientX - dragOffset.current.x,
+        y: e.clientY - dragOffset.current.y,
+      });
+    };
+    const handleUp = () => { dragging.current = false; };
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+    };
+  }, [onPositionChange]);
+
   return (
-    <div style={{
-      position: 'fixed',
-      right: 40,
-      top: 40,
-      zIndex: 100,
-      userSelect: 'none',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '6px',
-      padding: '6px 10px',
-      background: 'rgba(31,46,90,0.7)',
-      border: '1px solid #CCDDEA',
-      borderRadius: '8px',
-    }}>
+    <div
+      onMouseDown={handleMouseDown}
+      style={{
+        position: 'fixed',
+        left: position.x,
+        top: position.y,
+        zIndex: 100,
+        cursor: 'grab',
+        userSelect: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        padding: '6px 10px',
+        background: 'rgba(31,46,90,0.7)',
+        border: '1px solid #CCDDEA',
+        borderRadius: '8px',
+      }}
+    >
       <button onClick={onUndo} style={btnBase} title="Deshacer (Ctrl+Z)">↩</button>
       <button onClick={onRedo} style={btnBase} title="Rehacer (Ctrl+Shift+Z)">↪</button>
       <div style={{ width: 1, height: 24, background: '#CCDDEA', margin: '0 2px' }} />

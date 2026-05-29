@@ -24,6 +24,11 @@ function App() {
     x: Math.max(0, Math.round((window.innerWidth - 520) / 2)),
     y: 40,
   }));
+  const [hamburgerPos, setHamburgerPos] = useState({ x: 40, y: 40 });
+  const [actionsPos, setActionsPos] = useState(() => ({
+    x: window.innerWidth - 220,
+    y: 40,
+  }));
   const {
     tool, setTool,
     elements, setElements,
@@ -156,6 +161,8 @@ function App() {
         onNew={handleNew}
         onSave={handleSave}
         onExport={handleExport}
+        position={hamburgerPos}
+        onPositionChange={setHamburgerPos}
       />
       <Toolbar
         tool={tool}
@@ -170,6 +177,8 @@ function App() {
         onGridToggle={() => setGridEnabled(!gridEnabled)}
         showMinimap={showMinimap}
         onMapToggle={() => setShowMinimap(!showMinimap)}
+        position={actionsPos}
+        onPositionChange={setActionsPos}
       />
       <div style={{ flex: 1, position: 'relative' }}>
         <Canvas

@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface HamburgerMenuProps {
   onNew: () => void;
   onSave: () => void;
   onExport: () => void;
+  position: { x: number; y: number };
+  onPositionChange: (pos: { x: number; y: number }) => void;
 }
 
 const btnBase: React.CSSProperties = {
@@ -22,9 +24,35 @@ const btnBase: React.CSSProperties = {
   justifyContent: 'flex-start',
 };
 
-export default function HamburgerMenu({ onNew, onSave, onExport }: HamburgerMenuProps) {
+export default function HamburgerMenu({ onNew, onSave, onExport, position, onPositionChange }: HamburgerMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const dragging = useRef(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('[data-hamburger-dropdown]')) return;
+    e.preventDefault();
+    dragging.current = true;
+    dragOffset.current = { x: e.clientX - position.x, y: e.clientY - position.y };
+  }, [position]);
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      if (!dragging.current) return;
+      onPositionChange({
+        x: e.clientX - dragOffset.current.x,
+        y: e.clientY - dragOffset.current.y,
+      });
+    };
+    const handleUp = () => { dragging.current = false; };
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+    };
+  }, [onPositionChange]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -41,17 +69,18 @@ export default function HamburgerMenu({ onNew, onSave, onExport }: HamburgerMenu
   return (
     <div ref={ref} style={{
       position: 'fixed',
-      left: 40,
-      top: 40,
+      left: position.x,
+      top: position.y,
       zIndex: 100,
       userSelect: 'none',
       fontFamily: "'JetBrains Mono', monospace",
       fontSize: '13px',
     }}>
       <span
+        onMouseDown={handleMouseDown}
         onClick={() => setOpen(o => !o)}
         style={{
-          cursor: 'pointer', fontSize: '20px', lineHeight: '20px',
+          cursor: 'grab', fontSize: '20px', lineHeight: '20px',
           padding: '6px 10px', borderRadius: '6px',
           display: 'inline-block',
           background: open ? 'rgba(31,46,90,0.9)' : 'rgba(31,46,90,0.7)',
@@ -62,7 +91,7 @@ export default function HamburgerMenu({ onNew, onSave, onExport }: HamburgerMenu
       >☰</span>
 
       {open && (
-        <div style={{
+        <div data-hamburger-dropdown style={{
           position: 'absolute',
           top: '100%',
           left: 0,
