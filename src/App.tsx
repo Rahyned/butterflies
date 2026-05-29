@@ -4,7 +4,7 @@ import Toolbar from './components/Toolbar';
 import { useCanvas } from './hooks/useCanvas';
 import { useHistory } from './hooks/useHistory';
 import { useKeyboard } from './hooks/useKeyboard';
-import { saveFile, loadFile } from './utils/fileIO';
+import { saveFile, loadFile, exportPNG } from './utils/fileIO';
 import { measureTextHeight } from './utils/renderer';
 import type { CanvasElement } from './types/canvas';
 import './App.css';
@@ -19,7 +19,7 @@ function randomSeed(): number {
 
 function App() {
   const [toolbarPos, setToolbarPos] = useState(() => ({
-    x: Math.max(0, Math.round((window.innerWidth - 660) / 2)),
+    x: Math.max(0, Math.round((window.innerWidth - 750) / 2)),
     y: 40,
   }));
   const {
@@ -32,8 +32,8 @@ function App() {
     strokeColor,
     strokeWidth,
     roughness,
-    gridEnabled,
-    showMinimap,
+    gridEnabled, setGridEnabled,
+    showMinimap, setShowMinimap,
     drawingElement,
     selectionBox,
     handlePointerDown: rawPointerDown,
@@ -108,6 +108,7 @@ function App() {
   }, [ungroupElements]);
 
   const handleSave = useCallback(async () => { await saveFile(elements); }, [elements]);
+  const handleExport = useCallback(async () => { await exportPNG(elements); }, [elements]);
   const handleLoad = useCallback(async () => {
     const loaded = await loadFile();
     if (loaded) {
@@ -152,7 +153,15 @@ function App() {
       <Toolbar
         tool={tool}
         onToolChange={setTool}
+        onSave={handleSave}
+        onExport={handleExport}
+        onUndo={undo}
+        onRedo={redo}
         onNew={handleNew}
+        gridEnabled={gridEnabled}
+        onGridToggle={() => setGridEnabled(!gridEnabled)}
+        showMinimap={showMinimap}
+        onMapToggle={() => setShowMinimap(!showMinimap)}
         position={toolbarPos}
         onPositionChange={setToolbarPos}
       />

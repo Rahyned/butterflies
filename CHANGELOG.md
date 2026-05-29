@@ -296,3 +296,14 @@
 - `src/hooks/useCanvas.ts` (resize): al redimensionar un `TextElement`, el alto se recalcula automáticamente con `measureTextHeight()` según el nuevo ancho; solo el ancho es editable
 - `src/App.tsx` (`handleTextSubmit`): reemplazada lógica inline por `measureTextHeight()`
 - Archivos tocados: `src/utils/renderer.ts`, `src/utils/hitTest.ts`, `src/hooks/useCanvas.ts`, `src/App.tsx`
+
+## 2026-05-29
+
+### Menú hamburger + botones Undo/Redo/Grid/Map en toolbar
+- `Toolbar.tsx`: nuevo <abbr title="Menú hamburger ☰ con Nuevo, Guardar, Exportar PNG y placeholder Tema">hamburger menu</abbr> en drag handle
+- Botones visibles de Undo (↩) y Redo (↪) con separador vertical
+- Botones visibles de Grid toggle (⊞) y Map toggle (🗺) al final de la toolbar
+- Nuevas props: `onSave`, `onExport`, `onUndo`, `onRedo`, `gridEnabled`, `onGridToggle`, `showMinimap`, `onMapToggle`
+- Toolbar cambió de `width: 660` a `width: auto` (se ajusta al contenido)
+- `App.tsx`: importado `exportPNG`, creado `handleExport`, conectados `setGridEnabled` y `setShowMinimap` como toggles
+- Archivos tocados: `src/components/Toolbar.tsx`, `src/App.tsx`
