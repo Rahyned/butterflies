@@ -68,7 +68,7 @@ export default function ActionButtons({
         position: 'fixed',
         left: position.x,
         top: position.y,
-        zIndex: 100,
+        zIndex: 300,
         cursor: 'grab',
         userSelect: 'none',
         display: 'flex',

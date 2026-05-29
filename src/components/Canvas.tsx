@@ -336,7 +336,7 @@ export default function Canvas({
               bottom: 12,
               right: 12,
               borderRadius: 6,
-              zIndex: 10,
+              zIndex: 300,
               cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
             }}

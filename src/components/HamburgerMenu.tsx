@@ -72,7 +72,7 @@ export default function HamburgerMenu({ onNew, onSave, onExport, onResetPosition
       position: 'fixed',
       left: position.x,
       top: position.y,
-      zIndex: 100,
+      zIndex: 300,
       userSelect: 'none',
       fontFamily: "'JetBrains Mono', monospace",
       fontSize: '13px',

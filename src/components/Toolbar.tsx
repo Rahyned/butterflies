@@ -97,7 +97,7 @@ export default function Toolbar({
       position: 'fixed',
       left: position.x,
       top: position.y,
-      zIndex: 100,
+      zIndex: 300,
       userSelect: 'none',
       width: 'auto',
       height: 80,
@@ -188,7 +188,7 @@ export default function Toolbar({
               display: 'flex',
               flexDirection: 'column',
               gap: '2px',
-              zIndex: 101,
+              zIndex: 301,
             }}>
               {shapeTools.map(s => (
                 <button
