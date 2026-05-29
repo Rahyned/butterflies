@@ -4,6 +4,7 @@ interface HamburgerMenuProps {
   onNew: () => void;
   onSave: () => void;
   onExport: () => void;
+  onResetPositions: () => void;
   position: { x: number; y: number };
   onPositionChange: (pos: { x: number; y: number }) => void;
 }
@@ -24,7 +25,7 @@ const btnBase: React.CSSProperties = {
   justifyContent: 'flex-start',
 };
 
-export default function HamburgerMenu({ onNew, onSave, onExport, position, onPositionChange }: HamburgerMenuProps) {
+export default function HamburgerMenu({ onNew, onSave, onExport, onResetPositions, position, onPositionChange }: HamburgerMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
@@ -110,6 +111,8 @@ export default function HamburgerMenu({ onNew, onSave, onExport, position, onPos
           <div onClick={() => { onNew(); setOpen(false); }} style={btnBase}>📄 Nuevo</div>
           <div onClick={() => { onSave(); setOpen(false); }} style={btnBase}>💾 Guardar</div>
           <div onClick={() => { onExport(); setOpen(false); }} style={btnBase}>📤 Exportar PNG</div>
+          <div style={{ height: 1, background: '#CCDDEA', margin: '4px 0' }} />
+          <div onClick={() => { onResetPositions(); setOpen(false); }} style={btnBase}>↺ Reset posiciones</div>
           <div style={{ height: 1, background: '#CCDDEA', margin: '4px 0' }} />
           <div style={{ ...btnBase, opacity: 0.5, cursor: 'default' }}>🎨 Tema ↔</div>
         </div>

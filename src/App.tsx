@@ -124,6 +124,12 @@ function App() {
     }
   }, [setElements, setSelectedIds]);
 
+  const handleResetPositions = useCallback(() => {
+    setToolbarPos({ x: Math.max(0, Math.round((window.innerWidth - 520) / 2)), y: 40 });
+    setHamburgerPos({ x: 40, y: 40 });
+    setActionsPos({ x: window.innerWidth - 220, y: 40 });
+  }, []);
+
   const handleNew = useCallback(() => {
     setElements([]);
     setSelectedIds([]);
@@ -161,6 +167,7 @@ function App() {
         onNew={handleNew}
         onSave={handleSave}
         onExport={handleExport}
+        onResetPositions={handleResetPositions}
         position={hamburgerPos}
         onPositionChange={setHamburgerPos}
       />
