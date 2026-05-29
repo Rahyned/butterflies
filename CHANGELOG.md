@@ -299,11 +299,9 @@
 
 ## 2026-05-29
 
-### Menú hamburger + botones Undo/Redo/Grid/Map en toolbar
-- `Toolbar.tsx`: nuevo <abbr title="Menú hamburger ☰ con Nuevo, Guardar, Exportar PNG y placeholder Tema">hamburger menu</abbr> en drag handle
-- Botones visibles de Undo (↩) y Redo (↪) con separador vertical
-- Botones visibles de Grid toggle (⊞) y Map toggle (🗺) al final de la toolbar
-- Nuevas props: `onSave`, `onExport`, `onUndo`, `onRedo`, `gridEnabled`, `onGridToggle`, `showMinimap`, `onMapToggle`
-- Toolbar cambió de `width: 660` a `width: auto` (se ajusta al contenido)
-- `App.tsx`: importado `exportPNG`, creado `handleExport`, conectados `setGridEnabled` y `setShowMinimap` como toggles
-- Archivos tocados: `src/components/Toolbar.tsx`, `src/App.tsx`
+### ☰ Hamburger standalone left + action buttons right
+- Creado `src/components/HamburgerMenu.tsx`: ☰ standalone en top:40 left:40, dropdown con Nuevo, Guardar, Exportar PNG, placeholder Tema
+- Creado `src/components/ActionButtons.tsx`: ↩ ↪ ⊞ 🗺 standalone en top:40 right:40, con fondo semi-transparente y borde consistente
+- `Toolbar.tsx`: simplificada — solo tools + shapes dropdown, sin hamburger ni action buttons. Props reducidas a `tool`, `onToolChange`, `position`, `onPositionChange`
+- `App.tsx`: renderiza los 3 widgets independientes con el mismo `top: 40` (mismo spacing que toolbar tiene con borde superior)
+- Archivos tocados: `src/components/HamburgerMenu.tsx`, `src/components/ActionButtons.tsx`, `src/components/Toolbar.tsx`, `src/App.tsx`, `CHANGELOG.md`

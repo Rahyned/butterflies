@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Canvas from './components/Canvas';
 import Toolbar from './components/Toolbar';
+import HamburgerMenu from './components/HamburgerMenu';
+import ActionButtons from './components/ActionButtons';
 import { useCanvas } from './hooks/useCanvas';
 import { useHistory } from './hooks/useHistory';
 import { useKeyboard } from './hooks/useKeyboard';
@@ -19,7 +21,7 @@ function randomSeed(): number {
 
 function App() {
   const [toolbarPos, setToolbarPos] = useState(() => ({
-    x: Math.max(0, Math.round((window.innerWidth - 750) / 2)),
+    x: Math.max(0, Math.round((window.innerWidth - 520) / 2)),
     y: 40,
   }));
   const {
@@ -150,20 +152,24 @@ function App() {
 
   return (
     <div style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <HamburgerMenu
+        onNew={handleNew}
+        onSave={handleSave}
+        onExport={handleExport}
+      />
       <Toolbar
         tool={tool}
         onToolChange={setTool}
-        onSave={handleSave}
-        onExport={handleExport}
+        position={toolbarPos}
+        onPositionChange={setToolbarPos}
+      />
+      <ActionButtons
         onUndo={undo}
         onRedo={redo}
-        onNew={handleNew}
         gridEnabled={gridEnabled}
         onGridToggle={() => setGridEnabled(!gridEnabled)}
         showMinimap={showMinimap}
         onMapToggle={() => setShowMinimap(!showMinimap)}
-        position={toolbarPos}
-        onPositionChange={setToolbarPos}
       />
       <div style={{ flex: 1, position: 'relative' }}>
         <Canvas
