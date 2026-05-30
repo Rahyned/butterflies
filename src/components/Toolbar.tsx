@@ -22,9 +22,9 @@ const isShapeTool = (t: Tool): boolean =>
 const btnBase: React.CSSProperties = {
   background: 'transparent',
   color: '#EAEEEF',
-  border: '1px solid #CCDDEA',
-  borderRadius: '4px',
-  padding: '5px 10px',
+  border: 'none',
+  borderRadius: 0,
+  padding: '4px 8px',
   cursor: 'pointer',
   fontSize: '13px',
   fontFamily: "'JetBrains Mono', monospace",
@@ -36,14 +36,16 @@ const btnBase: React.CSSProperties = {
 
 const activeBtn: React.CSSProperties = {
   ...btnBase,
-  background: '#4cc9f0',
-  color: '#1a1a2e',
-  border: '1px solid #CCDDEA',
+  color: '#4cc9f0',
 };
 
 const dropdownBtn: React.CSSProperties = {
   ...btnBase,
-  minWidth: 155,
+  padding: '4px 10px',
+  background: '#1F2E5A',
+  borderRadius: '4px',
+  border: '1px solid #CCDDEA',
+  gap: '6px',
 };
 
 export default function Toolbar({
