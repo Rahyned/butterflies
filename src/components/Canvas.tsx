@@ -95,6 +95,8 @@ export default function Canvas({
     const dpr = window.devicePixelRatio || 1;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    ctx.fillStyle = '#EAEEEF';
+    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
     let rc = roughCanvasRef.current;
     if (!rc) {
