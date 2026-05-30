@@ -42,9 +42,8 @@ const activeBtn: React.CSSProperties = {
 const dropdownBtn: React.CSSProperties = {
   ...btnBase,
   padding: '4px 10px',
-  background: '#1F2E5A',
-  borderRadius: '4px',
-  border: '1px solid #CCDDEA',
+  border: 'none',
+  borderRadius: 0,
   gap: '6px',
 };
 
@@ -217,7 +216,7 @@ export default function Toolbar({
                       height: 1,
                       background: '#EAEEEF',
                       margin: '2px 12px',
-                      opacity: 0.4,
+                      opacity: 0.8,
                     }} />
                   )}
                 </div>
