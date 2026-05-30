@@ -131,7 +131,7 @@ export default function Toolbar({
       </div>
 
       {/* Tool buttons */}
-      <div style={{ padding: '6px 10px', display: 'flex', alignItems: 'center', gap: '6px', flex: 1, overflow: 'visible' }}>
+      <div style={{ padding: '6px 10px', display: 'flex', alignItems: 'center', flex: 1, overflow: 'visible' }}>
         <button
           onClick={() => onToolChange('select')}
           style={tool === 'select' ? activeBtn : btnBase}
@@ -139,6 +139,8 @@ export default function Toolbar({
         >
           ⇱ Seleccionar
         </button>
+
+        <div style={{ width: 1, height: 20, background: '#EAEEEF', margin: '0 10px' }} />
 
         <button
           onClick={() => onToolChange('hand')}
@@ -148,6 +150,8 @@ export default function Toolbar({
           ✋ Mano
         </button>
 
+        <div style={{ width: 1, height: 20, background: '#EAEEEF', margin: '0 10px' }} />
+
         <button
           onClick={() => onToolChange('freedraw')}
           style={tool === 'freedraw' ? activeBtn : btnBase}
@@ -156,6 +160,8 @@ export default function Toolbar({
           ✎ Dibujar
         </button>
 
+        <div style={{ width: 1, height: 20, background: '#EAEEEF', margin: '0 10px' }} />
+
         <button
           onClick={() => onToolChange('eraser')}
           style={tool === 'eraser' ? activeBtn : btnBase}
@@ -163,6 +169,8 @@ export default function Toolbar({
         >
           ⌫ Borrar
         </button>
+
+        <div style={{ width: 1, height: 20, background: '#EAEEEF', margin: '0 10px' }} />
 
         {/* Formas y Texto dropdown */}
         <div ref={dropdownRef} style={{ position: 'relative' }}>
