@@ -216,7 +216,6 @@ export default function Toolbar({
                       height: 1,
                       background: '#EAEEEF',
                       margin: '2px 12px',
-                      opacity: 0.8,
                     }} />
                   )}
                 </div>
