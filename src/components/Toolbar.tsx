@@ -184,23 +184,41 @@ export default function Toolbar({
               border: '1px solid #CCDDEA',
               borderRadius: '6px',
               boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-              padding: '4px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '2px',
+              padding: '4px 0',
               zIndex: 301,
+              minWidth: 155,
             }}>
-              {shapeTools.map(s => (
-                <button
-                  key={s.id}
-                  onClick={() => {
-                    onToolChange(s.id);
-                    setDropdownOpen(false);
-                  }}
-                  style={tool === s.id ? { ...btnBase, ...activeBtn } : btnBase}
-                >
-                  {s.icon} {s.label}
-                </button>
+              {shapeTools.map((s, i) => (
+                <div key={s.id}>
+                  <div
+                    onClick={() => {
+                      onToolChange(s.id);
+                      setDropdownOpen(false);
+                    }}
+                    style={{
+                      padding: '6px 12px',
+                      cursor: 'pointer',
+                      color: tool === s.id ? '#4cc9f0' : '#EAEEEF',
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: '13px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#1e2a4a')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    {s.icon} {s.label}
+                  </div>
+                  {i < shapeTools.length - 1 && (
+                    <div style={{
+                      height: 1,
+                      background: '#CCDDEA',
+                      margin: '2px 12px',
+                      opacity: 0.4,
+                    }} />
+                  )}
+                </div>
               ))}
             </div>
           )}
