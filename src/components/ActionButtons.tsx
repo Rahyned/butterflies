@@ -82,7 +82,7 @@ export default function ActionButtons({
     >
       <button onClick={onUndo} style={btnBase} title="Deshacer (Ctrl+Z)">↩</button>
       <button onClick={onRedo} style={btnBase} title="Rehacer (Ctrl+Shift+Z)">↪</button>
-      <div style={{ width: 1, height: 24, background: '#CCDDEA', margin: '0 2px' }} />
+      <div style={{ width: 1, height: 24, background: '#EAEEEF', margin: '0 2px' }} />
       <button onClick={onGridToggle} style={gridEnabled ? activeBtn : btnBase} title="Mostrar/ocultar cuadrícula">⊞</button>
       <button onClick={onMapToggle} style={showMinimap ? activeBtn : btnBase} title="Mostrar/ocultar minimapa">🗺</button>
     </div>

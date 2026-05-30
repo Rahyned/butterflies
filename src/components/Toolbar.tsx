@@ -213,7 +213,7 @@ export default function Toolbar({
                   {i < shapeTools.length - 1 && (
                     <div style={{
                       height: 1,
-                      background: '#CCDDEA',
+                      background: '#EAEEEF',
                       margin: '2px 12px',
                       opacity: 0.4,
                     }} />

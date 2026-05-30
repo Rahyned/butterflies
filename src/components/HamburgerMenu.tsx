@@ -111,9 +111,9 @@ export default function HamburgerMenu({ onNew, onSave, onExport, onResetPosition
           <div onClick={() => { onNew(); setOpen(false); }} style={btnBase}>📄 Nuevo</div>
           <div onClick={() => { onSave(); setOpen(false); }} style={btnBase}>💾 Guardar</div>
           <div onClick={() => { onExport(); setOpen(false); }} style={btnBase}>📤 Exportar PNG</div>
-          <div style={{ height: 1, background: '#CCDDEA', margin: '4px 0' }} />
+          <div style={{ height: 1, background: '#EAEEEF', margin: '4px 0' }} />
           <div onClick={() => { onResetPositions(); setOpen(false); }} style={btnBase}>↺ Reset posiciones</div>
-          <div style={{ height: 1, background: '#CCDDEA', margin: '4px 0' }} />
+          <div style={{ height: 1, background: '#EAEEEF', margin: '4px 0' }} />
           <div style={{ ...btnBase, opacity: 0.5, cursor: 'default' }}>🎨 Tema ↔</div>
         </div>
       )}

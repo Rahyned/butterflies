@@ -327,7 +327,7 @@ export default function Canvas({
             position: 'absolute',
             top: 0,
             left: 0,
-            background: '#CCDDEA',
+            background: '#EAEEEF',
           }}
         />
         {showMinimap && (
@@ -426,7 +426,7 @@ export default function Canvas({
             )}
             {selectedIds.length >= 1 && (
               <>
-                <div style={{ height: 1, background: '#CCDDEA', margin: '4px 0' }} />
+                <div style={{ height: 1, background: '#EAEEEF', margin: '4px 0' }} />
                 <div
                   onClick={() => { onBringToFront(); setContextMenuPos(null); }}
                   style={{ padding: '6px 16px', cursor: 'pointer', userSelect: 'none' }}
