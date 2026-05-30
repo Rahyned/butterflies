@@ -11,7 +11,7 @@ interface HamburgerMenuProps {
 
 const btnBase: React.CSSProperties = {
   background: 'transparent',
-  color: '#c8d0e0',
+  color: '#EAEEEF',
   border: 'none',
   borderRadius: '4px',
   padding: '5px 10px',
@@ -86,7 +86,7 @@ export default function HamburgerMenu({ onNew, onSave, onExport, onResetPosition
           display: 'inline-block',
           background: open ? '#1F2E5A' : '#1F2E5A',
           border: '1px solid #CCDDEA',
-          color: '#CCDDEA',
+          color: '#EAEEEF',
         }}
         title="Menú"
       >☰</span>

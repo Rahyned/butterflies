@@ -21,7 +21,7 @@ const isShapeTool = (t: Tool): boolean =>
 
 const btnBase: React.CSSProperties = {
   background: 'transparent',
-  color: '#c8d0e0',
+  color: '#EAEEEF',
   border: '1px solid #CCDDEA',
   borderRadius: '4px',
   padding: '5px 10px',
@@ -109,7 +109,7 @@ export default function Toolbar({
       borderRadius: '8px',
       fontFamily: "'JetBrains Mono', monospace",
       fontSize: '13px',
-      color: '#c8d0e0',
+      color: '#EAEEEF',
     }}>
       {/* Drag handle */}
       <div
@@ -122,7 +122,7 @@ export default function Toolbar({
           gap: '6px',
           borderBottom: '1px solid #CCDDEA',
           fontSize: '11px',
-          color: '#CCDDEA',
+          color: '#EAEEEF',
         }}
       >
         <span style={{ fontSize: '14px', lineHeight: '14px' }}>⠿</span>

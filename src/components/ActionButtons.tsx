@@ -13,7 +13,7 @@ interface ActionButtonsProps {
 
 const btnBase: React.CSSProperties = {
   background: 'transparent',
-  color: '#c8d0e0',
+  color: '#EAEEEF',
   border: '1px solid #CCDDEA',
   borderRadius: '4px',
   padding: '5px 8px',

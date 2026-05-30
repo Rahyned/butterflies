@@ -32,7 +32,7 @@ const inputStyle: React.CSSProperties = {
 
 const labelStyle: React.CSSProperties = {
   fontSize: '11px',
-  color: '#8899aa',
+  color: '#EAEEEF',
   fontFamily: "'JetBrains Mono', monospace",
   marginBottom: '4px',
 };
@@ -82,7 +82,7 @@ export default function PropertiesSidebar({ element, onUpdate, onClose }: Proper
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#CCDDEA',
+  color: '#EAEEEF',
           fontSize: '14px',
           fontFamily: "'JetBrains Mono', monospace",
         }}
@@ -113,10 +113,10 @@ export default function PropertiesSidebar({ element, onUpdate, onClose }: Proper
       fontFamily: "'JetBrains Mono', monospace",
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ color: '#CCDDEA', fontSize: '14px', fontWeight: 600 }}>Texto</span>
+        <span style={{ color: '#EAEEEF', fontSize: '14px', fontWeight: 600 }}>Texto</span>
         <span
           onClick={handleClose}
-          style={{ cursor: 'pointer', color: '#CCDDEA', fontSize: '18px', lineHeight: '1' }}
+          style={{ cursor: 'pointer', color: '#EAEEEF', fontSize: '18px', lineHeight: '1' }}
         >✕</span>
       </div>
 
