@@ -19,10 +19,10 @@ const fontFamilies = [
 ];
 
 const inputStyle: React.CSSProperties = {
-  background: '#0f1628',
-  border: '1px solid #CCDDEA',
+  background: 'var(--color-sidebar-bg)',
+  border: '1px solid var(--color-ui-border)',
   borderRadius: '4px',
-  color: '#CCDDEA',
+  color: 'var(--color-text-secondary)',
   padding: '4px 8px',
   fontFamily: "'JetBrains Mono', monospace",
   fontSize: '12px',
@@ -32,7 +32,7 @@ const inputStyle: React.CSSProperties = {
 
 const labelStyle: React.CSSProperties = {
   fontSize: '11px',
-  color: '#EAEEEF',
+  color: 'var(--color-text-primary)',
   fontFamily: "'JetBrains Mono', monospace",
   marginBottom: '4px',
 };
@@ -74,15 +74,15 @@ export default function PropertiesSidebar({ element, onUpdate, onClose }: Proper
           zIndex: 200,
           cursor: 'pointer',
           userSelect: 'none',
-          background: '#1F2E5A',
-          border: '1px solid #CCDDEA',
+          background: 'var(--color-ui-bg)',
+          border: '1px solid var(--color-ui-border)',
           borderRight: 'none',
           borderRadius: '6px 0 0 6px',
           padding: '14px 6px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-  color: '#EAEEEF',
+          color: 'var(--color-text-primary)',
           fontSize: '14px',
           fontFamily: "'JetBrains Mono', monospace",
         }}
@@ -99,8 +99,8 @@ export default function PropertiesSidebar({ element, onUpdate, onClose }: Proper
       width: 220,
       maxHeight: 'calc(100vh - 180px)',
       height: 'auto',
-      background: '#1F2E5A',
-      border: '1px solid #CCDDEA',
+      background: 'var(--color-sidebar-bg)',
+      border: '1px solid var(--color-ui-border)',
       borderRight: 'none',
       borderRadius: '8px 0 0 8px',
       zIndex: 200,
@@ -113,10 +113,10 @@ export default function PropertiesSidebar({ element, onUpdate, onClose }: Proper
       fontFamily: "'JetBrains Mono', monospace",
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ color: '#EAEEEF', fontSize: '14px', fontWeight: 600 }}>Texto</span>
+        <span style={{ color: 'var(--color-text-primary)', fontSize: '14px', fontWeight: 600 }}>Texto</span>
         <span
           onClick={handleClose}
-          style={{ cursor: 'pointer', color: '#EAEEEF', fontSize: '18px', lineHeight: '1' }}
+          style={{ cursor: 'pointer', color: 'var(--color-text-primary)', fontSize: '18px', lineHeight: '1' }}
         >✕</span>
       </div>
 
@@ -172,7 +172,7 @@ export default function PropertiesSidebar({ element, onUpdate, onClose }: Proper
       )}
 
       {!element && (
-        <div style={{ color: '#8899aa', fontSize: '12px', textAlign: 'center', marginTop: 40 }}>
+        <div style={{ color: 'var(--color-text-secondary)', fontSize: '12px', textAlign: 'center', marginTop: 40 }}>
           Seleccioná un texto para editar propiedades
         </div>
       )}

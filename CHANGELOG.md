@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-06-01
+
+### Sistema de temas oscuro/claro
+- Creado `src/hooks/useTheme.tsx` con `ThemeProvider` + `useTheme()` hook, persistencia en localStorage y atributo `data-theme` en `<html>`
+- Definidos colores CSS variables en `src/App.css` para dos temas:
+  - **Oscuro (default)**: canvas `#1a1a2e`, UI `#0f1628`, bordes `#2a3a5a`, texto `#e2e8f0`
+  - **Claro (secundario)**: canvas `#EAEEEF`, UI `#1F2E5A`, bordes `#CCDDEA`, texto `#EAEEEF`
+- Todos los componentes migraron de colores hardcodeados a `var(--color-*)`:
+  - `Canvas.tsx`: fondo, grilla, minimapa, textarea, menú contextual
+  - `Toolbar.tsx`: contenedor, botones, dropdown, separadores, hover
+  - `HamburgerMenu.tsx`: ícono, dropdown, separadores, hover
+  - `ActionButtons.tsx`: contenedor, botones, separador
+  - `PropertiesSidebar.tsx`: panel colapsado/expandido, inputs, colores de texto
+- `useCanvas.ts`: default stroke color lee `--color-default-stroke` de CSS
+- Hamburger menu: botón "Tema" funcional → toggle con ícono ☀️/🌙 según tema activo
+- Archivos tocados: `src/hooks/useTheme.tsx`, `src/App.css`, `src/App.tsx`, `src/components/Canvas.tsx`, `src/components/Toolbar.tsx`, `src/components/HamburgerMenu.tsx`, `src/components/ActionButtons.tsx`, `src/components/PropertiesSidebar.tsx`, `src/hooks/useCanvas.ts`, `CHANGELOG.md`
+
 ## 2026-05-24
 
 ### README

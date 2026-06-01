@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CanvasElement, Tool, Point, Group } from '../types/canvas';
 import { getElementBounds } from '../utils/hitTest';
 import { measureTextHeight } from '../utils/renderer';
+import { useTheme } from './useTheme';
 
 function generateId(): string {
   return Math.random().toString(36).substring(2, 11);
@@ -23,7 +24,33 @@ export function useCanvas() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 1 });
 
-  const [strokeColor, setStrokeColor] = useState('#000000');
+  const [strokeColor, setStrokeColor] = useState(() => {
+    const cs = typeof document !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--color-default-stroke').trim() : '';
+    return cs || '#e2e8f0';
+  });
+  const { theme } = useTheme();
+  const prevTheme = useRef(theme);
+
+  const darkDefault = '#e2e8f0';
+  const lightDefault = '#000000';
+
+  useEffect(() => {
+    const cs = getComputedStyle(document.documentElement).getPropertyValue('--color-default-stroke').trim();
+    if (cs) setStrokeColor(cs);
+
+    const old = prevTheme.current;
+    if (old !== theme) {
+      const oldDefault = old === 'dark' ? darkDefault : lightDefault;
+      const newDefault = theme === 'dark' ? darkDefault : lightDefault;
+      setElements(prev => prev.map(el =>
+        el.strokeColor === oldDefault
+          ? { ...el, strokeColor: newDefault }
+          : el
+      ));
+      prevTheme.current = theme;
+    }
+  }, [theme]);
+
   const [fillColor, setFillColor] = useState('transparent');
   const [strokeWidth, setStrokeWidth] = useState(2);
   const [roughness, setRoughness] = useState(1);

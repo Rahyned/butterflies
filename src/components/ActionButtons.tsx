@@ -13,8 +13,8 @@ interface ActionButtonsProps {
 
 const btnBase: React.CSSProperties = {
   background: 'transparent',
-  color: '#EAEEEF',
-  border: '1px solid #CCDDEA',
+  color: 'var(--color-text-primary)',
+  border: '1px solid var(--color-ui-border)',
   borderRadius: '4px',
   padding: '5px 8px',
   cursor: 'pointer',
@@ -27,8 +27,8 @@ const btnBase: React.CSSProperties = {
 
 const activeBtn: React.CSSProperties = {
   ...btnBase,
-  background: '#4cc9f0',
-  color: '#1a1a2e',
+  background: 'var(--color-active-ui)',
+  color: '#FFFFFF',
 };
 
 export default function ActionButtons({
@@ -75,14 +75,14 @@ export default function ActionButtons({
         alignItems: 'center',
         gap: '6px',
         padding: '6px 10px',
-        background: '#1F2E5A',
-        border: '1px solid #CCDDEA',
+        background: 'var(--color-ui-bg)',
+        border: '1px solid var(--color-ui-border)',
         borderRadius: '8px',
       }}
     >
       <button onClick={onUndo} style={btnBase} title="Deshacer (Ctrl+Z)">↩</button>
       <button onClick={onRedo} style={btnBase} title="Rehacer (Ctrl+Shift+Z)">↪</button>
-      <div style={{ width: 1, height: 24, background: '#EAEEEF', margin: '0 2px' }} />
+      <div style={{ width: 1, height: 24, background: 'var(--color-ui-border)', margin: '0 2px' }} />
       <button onClick={onGridToggle} style={gridEnabled ? activeBtn : btnBase} title="Mostrar/ocultar cuadrícula">⊞</button>
       <button onClick={onMapToggle} style={showMinimap ? activeBtn : btnBase} title="Mostrar/ocultar minimapa">🗺</button>
     </div>

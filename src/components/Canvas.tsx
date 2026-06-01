@@ -4,6 +4,7 @@ import type { RoughCanvas } from 'roughjs/bin/canvas';
 import type { CanvasElement, Group } from '../types/canvas';
 import { renderElement, renderSelectionBox, renderSelectionHandles } from '../utils/renderer';
 import { getElementBounds } from '../utils/hitTest';
+import { useTheme } from '../hooks/useTheme';
 
 
 interface CanvasProps {
@@ -31,8 +32,9 @@ interface CanvasProps {
 
 function drawGrid(ctx: CanvasRenderingContext2D, camera: { x: number; y: number; zoom: number }, canvasWidth: number, canvasHeight: number) {
   const gridSize = 40;
-  const minorColor = 'rgba(31, 46, 90, 0.15)';
-  const majorColor = 'rgba(31, 46, 90, 0.25)';
+  const cs = getComputedStyle(document.documentElement);
+  const minorColor = cs.getPropertyValue('--color-grid-minor').trim();
+  const majorColor = cs.getPropertyValue('--color-grid-major').trim();
   const majorEvery = 5;
 
   const left = -camera.x / camera.zoom;
@@ -85,6 +87,7 @@ export default function Canvas({
   textInputPosRef.current = textInputPos;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null);
+  const { theme } = useTheme();
 
   const render = useCallback(() => {
     const canvas = canvasRef.current;
@@ -95,7 +98,8 @@ export default function Canvas({
     const dpr = window.devicePixelRatio || 1;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    ctx.fillStyle = '#EAEEEF';
+    const cs = getComputedStyle(document.documentElement);
+    ctx.fillStyle = cs.getPropertyValue('--color-canvas-bg').trim();
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
     let rc = roughCanvasRef.current;
@@ -135,31 +139,9 @@ export default function Canvas({
     }
 
     ctx.restore();
-  }, [elements, drawingElement, selectedIds, camera, gridEnabled, selectionBox]);
+  }, [elements, drawingElement, selectedIds, camera, gridEnabled, selectionBox, theme]);
 
-  useEffect(() => {
-    render();
-  }, [render]);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const resize = () => {
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      canvas.style.width = window.innerWidth + 'px';
-      canvas.style.height = window.innerHeight + 'px';
-      roughCanvasRef.current = null;
-      render();
-    };
-    resize();
-    window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
-  }, [render]);
-
-  useEffect(() => {
+  const renderMinimap = useCallback(() => {
     const mCanvas = minimapCanvasRef.current;
     if (!mCanvas || !showMinimap || elements.length === 0) return;
 
@@ -184,9 +166,10 @@ export default function Canvas({
     const ctx = mCanvas.getContext('2d')!;
     ctx.scale(dpr, dpr);
 
-    ctx.fillStyle = 'rgba(31, 46, 90, 0.9)';
+    const mcs = getComputedStyle(document.documentElement);
+    ctx.fillStyle = mcs.getPropertyValue('--color-minimap-bg').trim();
     ctx.fillRect(0, 0, mw, mh);
-    ctx.strokeStyle = '#CCDDEA';
+    ctx.strokeStyle = mcs.getPropertyValue('--color-ui-border').trim();
     ctx.lineWidth = 1;
     ctx.strokeRect(0, 0, mw, mh);
 
@@ -196,10 +179,12 @@ export default function Canvas({
     ctx.translate(ox - minX * scale + padding * scale, oy - minY * scale + padding * scale);
     ctx.scale(scale, scale);
 
+    const miniStroke = theme === 'dark' ? '#000000' : '#ffffff';
     const miniRc = rough.canvas(mCanvas);
     const sortedMinimap = [...elements].sort((a, b) => a.zIndex - b.zIndex);
     for (const el of sortedMinimap) {
-      renderElement(ctx, el, miniRc);
+      const miniEl = { ...el, strokeColor: miniStroke, fillColor: 'transparent' } as CanvasElement;
+      renderElement(ctx, miniEl, miniRc);
     }
     ctx.restore();
 
@@ -208,10 +193,35 @@ export default function Canvas({
     const vpW = (window.innerWidth / camera.zoom) * scale;
     const vpH = (window.innerHeight / camera.zoom) * scale;
 
-    ctx.strokeStyle = '#4cc9f0';
+    const selColor = getComputedStyle(document.documentElement).getPropertyValue('--color-selection').trim();
+    ctx.strokeStyle = selColor || '#4cc9f0';
     ctx.lineWidth = 1.5;
     ctx.strokeRect(vpLeft, vpTop, vpW, vpH);
-  }, [elements, camera, showMinimap]);
+  }, [elements, camera, showMinimap, theme]);
+
+  useEffect(() => {
+    render();
+    renderMinimap();
+  }, [render, renderMinimap]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+      roughCanvasRef.current = null;
+      render();
+      renderMinimap();
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
+  }, [render, renderMinimap]);
 
   const getWorldFromScreen = useCallback((screenX: number, screenY: number) => ({
     x: (screenX - camera.x) / camera.zoom,
@@ -327,7 +337,7 @@ export default function Canvas({
             position: 'absolute',
             top: 0,
             left: 0,
-            background: '#EAEEEF',
+            background: 'var(--color-canvas-bg)',
           }}
         />
         {showMinimap && (
@@ -374,9 +384,9 @@ export default function Canvas({
               el.style.height = el.scrollHeight + 'px';
             }}
             style={{
-              background: 'rgba(31, 46, 90, 0.6)',
-              border: '1px solid #CCDDEA',
-              color: '#e2e8f0',
+              background: 'var(--color-textarea-bg)',
+              border: '1px solid var(--color-ui-border)',
+              color: 'var(--color-text-primary)',
               fontFamily: 'monospace',
               fontSize: '20px',
               padding: '4px',
@@ -394,21 +404,21 @@ export default function Canvas({
             left: contextMenuPos.x,
             top: contextMenuPos.y,
             zIndex: 10000,
-            background: '#1F2E5A',
-            border: '1px solid #CCDDEA',
+            background: 'var(--color-ui-bg)',
+            border: '1px solid var(--color-ui-border)',
             borderRadius: 4,
             padding: '4px 0',
             minWidth: 170,
             boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: 13,
-            color: '#e2e8f0',
+            color: 'var(--color-text-primary)',
           }}>
             {selectedIds.length >= 2 && (
               <div
                 onClick={() => { onGroup(); setContextMenuPos(null); }}
                 style={{ padding: '6px 16px', cursor: 'pointer', userSelect: 'none' }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#1e2a4a')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-hover)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 Agrupar
@@ -418,7 +428,7 @@ export default function Canvas({
               <div
                 onClick={() => { onUngroup(); setContextMenuPos(null); }}
                 style={{ padding: '6px 16px', cursor: 'pointer', userSelect: 'none' }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#1e2a4a')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-hover)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 Desagrupar
@@ -426,11 +436,11 @@ export default function Canvas({
             )}
             {selectedIds.length >= 1 && (
               <>
-                <div style={{ height: 1, background: '#EAEEEF', margin: '4px 0' }} />
+                <div style={{ height: 1, background: 'var(--color-text-secondary)', margin: '4px 0' }} />
                 <div
                   onClick={() => { onBringToFront(); setContextMenuPos(null); }}
                   style={{ padding: '6px 16px', cursor: 'pointer', userSelect: 'none' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#1e2a4a')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-hover)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   Traer al frente
@@ -438,7 +448,7 @@ export default function Canvas({
                 <div
                   onClick={() => { onMoveUp(); setContextMenuPos(null); }}
                   style={{ padding: '6px 16px', cursor: 'pointer', userSelect: 'none' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#1e2a4a')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-hover)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   Subir capa
@@ -446,7 +456,7 @@ export default function Canvas({
                 <div
                   onClick={() => { onMoveDown(); setContextMenuPos(null); }}
                   style={{ padding: '6px 16px', cursor: 'pointer', userSelect: 'none' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#1e2a4a')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-hover)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   Bajar capa
@@ -454,7 +464,7 @@ export default function Canvas({
                 <div
                   onClick={() => { onSendToBack(); setContextMenuPos(null); }}
                   style={{ padding: '6px 16px', cursor: 'pointer', userSelect: 'none' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#1e2a4a')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-hover)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   Enviar al fondo

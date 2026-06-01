@@ -6,6 +6,7 @@ import ActionButtons from './components/ActionButtons';
 import { useCanvas } from './hooks/useCanvas';
 import { useHistory } from './hooks/useHistory';
 import { useKeyboard } from './hooks/useKeyboard';
+
 import PropertiesSidebar from './components/PropertiesSidebar';
 import { saveFile, loadFile, exportPNG } from './utils/fileIO';
 import { measureTextHeight } from './utils/renderer';

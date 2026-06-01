@@ -21,7 +21,7 @@ const isShapeTool = (t: Tool): boolean =>
 
 const btnBase: React.CSSProperties = {
   background: 'transparent',
-  color: '#EAEEEF',
+  color: 'var(--color-text-primary)',
   border: 'none',
   borderRadius: 0,
   padding: '4px 8px',
@@ -36,7 +36,8 @@ const btnBase: React.CSSProperties = {
 
 const activeBtn: React.CSSProperties = {
   ...btnBase,
-  color: '#4cc9f0',
+  color: 'var(--color-active-ui)',
+  fontWeight: 700,
 };
 
 const dropdownBtn: React.CSSProperties = {
@@ -105,12 +106,12 @@ export default function Toolbar({
       display: 'flex',
       flexDirection: 'column',
       overflow: 'visible',
-      background: '#1F2E5A',
-      border: '1px solid #CCDDEA',
+      background: 'var(--color-ui-bg)',
+      border: '1px solid var(--color-ui-border)',
       borderRadius: '8px',
       fontFamily: "'JetBrains Mono', monospace",
       fontSize: '13px',
-      color: '#EAEEEF',
+      color: 'var(--color-text-primary)',
     }}>
       {/* Drag handle */}
       <div
@@ -121,9 +122,9 @@ export default function Toolbar({
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
-          borderBottom: '1px solid #CCDDEA',
+          borderBottom: '1px solid var(--color-ui-border)',
           fontSize: '11px',
-          color: '#EAEEEF',
+          color: 'var(--color-text-primary)',
         }}
       >
         <span style={{ fontSize: '14px', lineHeight: '14px' }}>⠿</span>
@@ -140,7 +141,7 @@ export default function Toolbar({
           ⇱ Seleccionar
         </button>
 
-        <div style={{ width: 1, height: 20, background: '#EAEEEF', margin: '0 10px' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--color-ui-border)', margin: '0 10px' }} />
 
         <button
           onClick={() => onToolChange('hand')}
@@ -150,7 +151,7 @@ export default function Toolbar({
           ✋ Mano
         </button>
 
-        <div style={{ width: 1, height: 20, background: '#EAEEEF', margin: '0 10px' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--color-ui-border)', margin: '0 10px' }} />
 
         <button
           onClick={() => onToolChange('freedraw')}
@@ -160,7 +161,7 @@ export default function Toolbar({
           ✎ Dibujar
         </button>
 
-        <div style={{ width: 1, height: 20, background: '#EAEEEF', margin: '0 10px' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--color-ui-border)', margin: '0 10px' }} />
 
         <button
           onClick={() => onToolChange('eraser')}
@@ -170,7 +171,7 @@ export default function Toolbar({
           ⌫ Borrar
         </button>
 
-        <div style={{ width: 1, height: 20, background: '#EAEEEF', margin: '0 10px' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--color-ui-border)', margin: '0 10px' }} />
 
         {/* Formas y Texto dropdown */}
         <div ref={dropdownRef} style={{ position: 'relative' }}>
@@ -189,8 +190,8 @@ export default function Toolbar({
               top: '100%',
               left: 0,
               marginTop: '2px',
-              background: '#1F2E5A',
-              border: '1px solid #CCDDEA',
+              background: 'var(--color-ui-bg)',
+              border: '1px solid var(--color-ui-border)',
               borderRadius: '6px',
               boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
               padding: '4px 0',
@@ -207,14 +208,14 @@ export default function Toolbar({
                     style={{
                       padding: '6px 12px',
                       cursor: 'pointer',
-                      color: tool === s.id ? '#4cc9f0' : '#EAEEEF',
+                      color: tool === s.id ? 'var(--color-active-ui)' : 'var(--color-text-primary)',
                       fontFamily: "'JetBrains Mono', monospace",
                       fontSize: '13px',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#1e2a4a')}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-hover)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
                     {s.icon} {s.label}
@@ -222,7 +223,7 @@ export default function Toolbar({
                   {i < shapeTools.length - 1 && (
                     <div style={{
                       height: 1,
-                      background: '#EAEEEF',
+                      background: 'var(--color-ui-border)',
                       margin: '2px 12px',
                     }} />
                   )}

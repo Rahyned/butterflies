@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTheme } from '../hooks/useTheme';
 
 interface HamburgerMenuProps {
   onNew: () => void;
@@ -11,7 +12,7 @@ interface HamburgerMenuProps {
 
 const btnBase: React.CSSProperties = {
   background: 'transparent',
-  color: '#EAEEEF',
+  color: 'var(--color-text-primary)',
   border: 'none',
   borderRadius: '4px',
   padding: '5px 10px',
@@ -26,6 +27,7 @@ const btnBase: React.CSSProperties = {
 };
 
 export default function HamburgerMenu({ onNew, onSave, onExport, onResetPositions, position, onPositionChange }: HamburgerMenuProps) {
+  const { theme, toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
@@ -84,9 +86,9 @@ export default function HamburgerMenu({ onNew, onSave, onExport, onResetPosition
           cursor: 'grab', fontSize: '20px', lineHeight: '20px',
           padding: '6px 10px', borderRadius: '6px',
           display: 'inline-block',
-          background: open ? '#1F2E5A' : '#1F2E5A',
-          border: '1px solid #CCDDEA',
-          color: '#EAEEEF',
+          background: 'var(--color-ui-bg)',
+          border: '1px solid var(--color-ui-border)',
+          color: 'var(--color-text-primary)',
         }}
         title="Menú"
       >☰</span>
@@ -97,8 +99,8 @@ export default function HamburgerMenu({ onNew, onSave, onExport, onResetPosition
           top: '100%',
           left: 0,
           marginTop: '4px',
-          background: '#1F2E5A',
-          border: '1px solid #CCDDEA',
+          background: 'var(--color-ui-bg)',
+          border: '1px solid var(--color-ui-border)',
           borderRadius: '6px',
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
           padding: '4px',
@@ -111,10 +113,10 @@ export default function HamburgerMenu({ onNew, onSave, onExport, onResetPosition
           <div onClick={() => { onNew(); setOpen(false); }} style={btnBase}>📄 Nuevo</div>
           <div onClick={() => { onSave(); setOpen(false); }} style={btnBase}>💾 Guardar</div>
           <div onClick={() => { onExport(); setOpen(false); }} style={btnBase}>📤 Exportar PNG</div>
-          <div style={{ height: 1, background: '#EAEEEF', margin: '4px 0' }} />
+          <div style={{ height: 1, background: 'var(--color-ui-border)', margin: '4px 0' }} />
           <div onClick={() => { onResetPositions(); setOpen(false); }} style={btnBase}>↺ Reset posiciones</div>
-          <div style={{ height: 1, background: '#EAEEEF', margin: '4px 0' }} />
-          <div style={{ ...btnBase, opacity: 0.5, cursor: 'default' }}>🎨 Tema ↔</div>
+          <div style={{ height: 1, background: 'var(--color-ui-border)', margin: '4px 0' }} />
+          <div onClick={() => { toggleTheme(); setOpen(false); }} style={btnBase}>🎨 Tema {theme === 'dark' ? '☀️' : '🌙'}</div>
         </div>
       )}
     </div>

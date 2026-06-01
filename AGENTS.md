@@ -13,7 +13,7 @@ Sos el desarrollador principal de esta app. Seguí este documento como fuente de
 - **CSS puro** (sin Tailwind, sin UI libraries)
 - **Vite 7** (bundler)
 
-## Estado actual (26 mayo 2026)
+## Estado actual (1 junio 2026)
 
 ### ✅ Funcionando
 
@@ -36,7 +36,7 @@ Sos el desarrollador principal de esta app. Seguí este documento como fuente de
 - Grid toggle y minimapa
 - Export a PNG
 - Hand tool (pan con click + drag y shortcut 0)
-- Tema oscuro: fondo `#1a1a2e`, toolbar `#0f1628`
+- Tema oscuro/claro con toggle en menú hamburguesa, persistencia en localStorage
 - `npm run tauri dev` arranca sin errores
 - Build release genera `butterflies.exe` (verificado)
 
@@ -44,15 +44,13 @@ Sos el desarrollador principal de esta app. Seguí este documento como fuente de
 
 _(ninguno — todo implementado)_
 
-### ✅ Implementado (27 mayo 2026)
+### ✅ Implementado (1 junio 2026)
 
-- Sistema de capas con zIndex explícito en cada `BaseElement`
-- `bringToFront()`, `sendToBack()`, `moveUp()`, `moveDown()` en `useCanvas.ts`
-- Render ordenado por zIndex (Painter's Algorithm)
-- Menú contextual con controles de capa: Traer al frente, Subir capa, Bajar capa, Enviar al fondo
-- Atajos de teclado: `Ctrl+]` / `Ctrl+[` / `Ctrl+Shift+]` / `Ctrl+Shift+[`
-- Elementos nuevos reciben zIndex incremental automáticamente
-- Guardado/carga preserva zIndex (serializado en JSON)
+- Sistema de temas oscuro/claro con `data-theme` + CSS variables
+- `ThemeProvider` + `useTheme()` hook en `src/hooks/useTheme.tsx`
+- Toggle funcional en menú hamburguesa (ícono ☀️/🌙)
+- Persistencia de preferencia en localStorage
+- Todos los componentes migrados a `var(--color-*)`:
 
 ### Decisiones técnicas tomadas
 
@@ -65,12 +63,14 @@ _(ninguno — todo implementado)_
 | `useHistory` con `useRef` en vez de `useState` para stack | Evita closures stale en callbacks de undo/redo |
 | Colores/grosor/roughness en estado de `useCanvas` | Flujo unificado desde Toolbar → useCanvas → elementos dibujados |
 | Textarea no-controlado (sin `value` prop) | WebView2 + React 19 no renderiza `<textarea>` controlado con `value`; no-controlado funciona |
+| Tema via CSS variables + `data-theme` en `<html>` | Permite cambiar colores sin re-renderizar React; todos los componentes usan `var(--color-*)` en inline styles |
+| localStorage para preferencia de tema | Excepción a la regla "no localStorage" porque es preferencia UI, no datos de canvas |
 
 ### Reglas obligatorias
 
 - **No usar `any` en TypeScript** sin comentario justificatorio
 - **No usar librerías UI** (ni Tailwind, ni MUI, ni shadcn)
-- **No guardar en localStorage** — solo Tauri FS
+- **No guardar en localStorage** — solo Tauri FS (excepción: preferencia de tema vía localStorage)
 - **No hacer fetch a URLs externas**
 - **Registrar cada cambio en `CHANGELOG.md`** con fecha, descripción y archivos tocados
 - **Actualizar la página CHANGELOG en Notion** con cada cambio que se registre en `CHANGELOG.md`. La página está dentro de la página `butterflies` (ID: `36c71396-eaa5-8079-9197-c049b3e512e0`), sub-página CHANGELOG (ID: `36c71396-eaa5-81e5-95d7-de59efa25e7c`)
@@ -98,7 +98,8 @@ src/
 ├── hooks/
 │   ├── useCanvas.ts           ← estado del canvas, dibujo, selección, zoom/pan
 │   ├── useHistory.ts          ← undo/redo con refs (50 estados)
-│   └── useKeyboard.ts         ← atajos de teclado
+│   ├── useKeyboard.ts         ← atajos de teclado
+│   └── useTheme.tsx           ← tema oscuro/claro con contexto + CSS variables
 └── utils/
     ├── renderer.ts            ← dibujado con rough.js + selection box/handles
     ├── hitTest.ts             ← detección de clic sobre elementos
