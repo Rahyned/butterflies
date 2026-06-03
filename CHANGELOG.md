@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-06-03
+
+### Minimapa expandible + más grande con spacing
+- Minimapa ahora 200×150 colapsado (vs 180×130), con spacing 24px desde bordes inferiores derechos (vs 12px)
+- Al hacer click: se expande a 400×300 (toggle)
+- Nuevo estado `minimapExpanded` en `Canvas.tsx` + onClick handler en el canvas del minimapa
+- `renderMinimap` usa dimensiones condicionales según estado expandido
+- CSS transition suave en width/height
+- Archivos tocados: `src/components/Canvas.tsx`
+
 ## 2026-06-01
 
 ### Sistema de temas oscuro/claro

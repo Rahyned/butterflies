@@ -83,6 +83,7 @@ export default function Canvas({
   const containerRef = useRef<HTMLDivElement>(null);
   const minimapCanvasRef = useRef<HTMLCanvasElement>(null);
   const [textInputPos, setTextInputPos] = useState<{ x: number; y: number } | null>(null);
+  const [minimapExpanded, setMinimapExpanded] = useState(false);
   const textInputPosRef = useRef(textInputPos);
   textInputPosRef.current = textInputPos;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -151,8 +152,8 @@ export default function Canvas({
     const maxX = Math.max(...allBounds.map(b => b.x + b.width));
     const maxY = Math.max(...allBounds.map(b => b.y + b.height));
 
-    const mw = 180;
-    const mh = 130;
+    const mw = minimapExpanded ? 400 : 200;
+    const mh = minimapExpanded ? 300 : 150;
     const padding = 20;
     const contentW = maxX - minX + padding * 2;
     const contentH = maxY - minY + padding * 2;
@@ -197,7 +198,7 @@ export default function Canvas({
     ctx.strokeStyle = selColor || '#4cc9f0';
     ctx.lineWidth = 1.5;
     ctx.strokeRect(vpLeft, vpTop, vpW, vpH);
-  }, [elements, camera, showMinimap, theme]);
+  }, [elements, camera, showMinimap, theme, minimapExpanded]);
 
   useEffect(() => {
     render();
@@ -343,14 +344,16 @@ export default function Canvas({
         {showMinimap && (
           <canvas
             ref={minimapCanvasRef}
+            onClick={() => setMinimapExpanded(v => !v)}
             style={{
               position: 'absolute',
-              bottom: 12,
-              right: 12,
-              borderRadius: 6,
+              bottom: 24,
+              right: 24,
+              borderRadius: 8,
               zIndex: 300,
               cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+              transition: 'width 0.15s, height 0.15s',
             }}
           />
         )}

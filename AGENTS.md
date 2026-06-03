@@ -44,7 +44,9 @@ Sos el desarrollador principal de esta app. Seguí este documento como fuente de
 
 _(ninguno — todo implementado)_
 
-### ✅ Implementado (1 junio 2026)
+### ✅ Implementado (3 junio 2026)
+
+- Minimapa expandible: click para toggle 200×150 ↔ 400×300, spacing 24px desde bordes
 
 - Sistema de temas oscuro/claro con `data-theme` + CSS variables
 - `ThemeProvider` + `useTheme()` hook en `src/hooks/useTheme.tsx`
