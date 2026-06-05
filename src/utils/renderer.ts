@@ -31,6 +31,98 @@ export function renderElement(ctx: CanvasRenderingContext2D, el: CanvasElement, 
     fillStyle: 'solid',
   };
 
+  if (el.roughness === 0) {
+    ctx.save();
+    ctx.strokeStyle = el.strokeColor;
+    ctx.lineWidth = el.strokeWidth;
+    ctx.fillStyle = el.fillColor === 'transparent' ? 'transparent' : el.fillColor;
+    ctx.globalAlpha = el.opacity;
+
+    switch (el.type) {
+      case 'rect':
+        if (el.fillColor !== 'transparent') ctx.fillRect(el.x, el.y, el.width, el.height);
+        ctx.strokeRect(el.x, el.y, el.width, el.height);
+        break;
+      case 'ellipse': {
+        const cx = el.x + el.width / 2;
+        const cy = el.y + el.height / 2;
+        const rx = el.width / 2;
+        const ry = el.height / 2;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        if (el.fillColor !== 'transparent') ctx.fill();
+        ctx.stroke();
+        break;
+      }
+      case 'line':
+        if (el.points.length >= 2) {
+          ctx.beginPath();
+          ctx.moveTo(el.points[0].x, el.points[0].y);
+          ctx.lineTo(el.points[1].x, el.points[1].y);
+          ctx.stroke();
+        }
+        break;
+      case 'arrow': {
+        if (el.points.length < 2) break;
+        const [p1, p2] = el.points;
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+        const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+        const headLen = 12;
+        const headAngle = Math.PI / 6;
+        ctx.beginPath();
+        const hx1 = p2.x - headLen * Math.cos(angle - headAngle);
+        const hy1 = p2.y - headLen * Math.sin(angle - headAngle);
+        const hx2 = p2.x - headLen * Math.cos(angle + headAngle);
+        const hy2 = p2.y - headLen * Math.sin(angle + headAngle);
+        ctx.moveTo(p2.x, p2.y);
+        ctx.lineTo(hx1, hy1);
+        ctx.lineTo(hx2, hy2);
+        ctx.closePath();
+        ctx.fillStyle = el.strokeColor;
+        ctx.fill();
+        break;
+      }
+      case 'freedraw':
+        if (el.points.length < 2) break;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(el.points[0].x, el.points[0].y);
+        for (let i = 1; i < el.points.length; i++) {
+          ctx.lineTo(el.points[i].x, el.points[i].y);
+        }
+        ctx.stroke();
+        break;
+      case 'text':
+        ctx.font = `${el.fontWeight || '400'} ${el.fontSize}px ${el.fontFamily}`;
+        ctx.textBaseline = 'top';
+        {
+          const words = el.text.split(' ');
+          let line = '';
+          let lineY = 0;
+          const lineHeight = el.fontSize * 1.2;
+          for (const word of words) {
+            const testLine = line ? line + ' ' + word : word;
+            const m = ctx.measureText(testLine);
+            if (m.width > el.width && line) {
+              ctx.fillText(line, el.x, el.y + lineY);
+              line = word;
+              lineY += lineHeight;
+            } else {
+              line = testLine;
+            }
+          }
+          if (line) ctx.fillText(line, el.x, el.y + lineY);
+        }
+        break;
+    }
+    ctx.restore();
+    return;
+  }
+
   switch (el.type) {
     case 'rect':
       rc.rectangle(el.x, el.y, el.width, el.height, opts);

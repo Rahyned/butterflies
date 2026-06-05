@@ -1,5 +1,25 @@
 # Changelog
 
+## 2026-06-05
+
+### Trazos lisos con roughness 0 (Canvas nativo)
+- `src/utils/renderer.ts`: cuando `roughness === 0`, todas las formas se dibujan con Canvas 2D API nativa en vez de rough.js
+- rect, ellipse, line, arrow, freedraw y text tienen su implementación nativa: trazos perfectamente lisos, sin perturbaciones
+- Default de `roughness` cambiado de `1` a `0` en `useCanvas.ts`
+- Archivos tocados: `src/utils/renderer.ts`, `src/hooks/useCanvas.ts`
+
+### Exportar SVG
+- Creado `src/utils/svgExport.ts` con traducción de cada `CanvasElement` a SVG equivalente:
+  - `rect` → `<rect>`, `ellipse` → `<ellipse>`, `line` → `<line>`
+  - `arrow` → `<line>` + `<polygon>` para punta de flecha
+  - `freedraw` → `<polyline>`, `text` → `<text>` con `<tspan>` por línea (word wrap)
+  - viewBox con padding 40px, fondo blanco, elementos ordenados por zIndex
+  - Se guarda con diálogo nativo como `.svg`
+- Botón `📐 Exportar SVG` en menú hamburguesa
+- Botón `🖼 Exportar PNG` renombrado (antes `📤`)
+- Botón `📂 Importar` agregado entre Guardar y Exportar en menú hamburguesa
+- Archivos tocados: `src/utils/svgExport.ts`, `src/components/HamburgerMenu.tsx`, `src/App.tsx`
+
 ## 2026-06-03
 
 ### Minimapa expandible + más grande con spacing

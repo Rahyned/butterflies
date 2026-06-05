@@ -9,6 +9,7 @@ import { useKeyboard } from './hooks/useKeyboard';
 
 import PropertiesSidebar from './components/PropertiesSidebar';
 import { saveFile, loadFile, exportPNG } from './utils/fileIO';
+import { exportSVG } from './utils/svgExport';
 import { measureTextHeight } from './utils/renderer';
 import type { CanvasElement, TextElement } from './types/canvas';
 import './App.css';
@@ -119,6 +120,7 @@ function App() {
 
   const handleSave = useCallback(async () => { await saveFile(elements); }, [elements]);
   const handleExport = useCallback(async () => { await exportPNG(elements); }, [elements]);
+  const handleExportSVG = useCallback(async () => { await exportSVG(elements); }, [elements]);
   const handleLoad = useCallback(async () => {
     const loaded = await loadFile();
     if (loaded) {
@@ -178,7 +180,9 @@ function App() {
       <HamburgerMenu
         onNew={handleNew}
         onSave={handleSave}
-        onExport={handleExport}
+        onLoad={handleLoad}
+        onExportPNG={handleExport}
+        onExportSVG={handleExportSVG}
         onResetPositions={handleResetPositions}
         position={hamburgerPos}
         onPositionChange={setHamburgerPos}

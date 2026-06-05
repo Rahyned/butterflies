@@ -53,7 +53,7 @@ export function useCanvas() {
 
   const [fillColor, setFillColor] = useState('transparent');
   const [strokeWidth, setStrokeWidth] = useState(2);
-  const [roughness, setRoughness] = useState(1);
+  const [roughness, setRoughness] = useState(0);
   const [gridEnabled, setGridEnabled] = useState(true);
   const [showMinimap, setShowMinimap] = useState(true);
 

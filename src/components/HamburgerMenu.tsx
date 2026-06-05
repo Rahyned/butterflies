@@ -4,7 +4,9 @@ import { useTheme } from '../hooks/useTheme';
 interface HamburgerMenuProps {
   onNew: () => void;
   onSave: () => void;
-  onExport: () => void;
+  onLoad: () => void;
+  onExportPNG: () => void;
+  onExportSVG: () => void;
   onResetPositions: () => void;
   position: { x: number; y: number };
   onPositionChange: (pos: { x: number; y: number }) => void;
@@ -26,7 +28,7 @@ const btnBase: React.CSSProperties = {
   justifyContent: 'flex-start',
 };
 
-export default function HamburgerMenu({ onNew, onSave, onExport, onResetPositions, position, onPositionChange }: HamburgerMenuProps) {
+export default function HamburgerMenu({ onNew, onSave, onLoad, onExportPNG, onExportSVG, onResetPositions, position, onPositionChange }: HamburgerMenuProps) {
   const { theme, toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -112,7 +114,10 @@ export default function HamburgerMenu({ onNew, onSave, onExport, onResetPosition
         }}>
           <div onClick={() => { onNew(); setOpen(false); }} style={btnBase}>📄 Nuevo</div>
           <div onClick={() => { onSave(); setOpen(false); }} style={btnBase}>💾 Guardar</div>
-          <div onClick={() => { onExport(); setOpen(false); }} style={btnBase}>📤 Exportar PNG</div>
+          <div onClick={() => { onLoad(); setOpen(false); }} style={btnBase}>📂 Importar</div>
+          <div style={{ height: 1, background: 'var(--color-ui-border)', margin: '4px 0' }} />
+          <div onClick={() => { onExportPNG(); setOpen(false); }} style={btnBase}>🖼 Exportar PNG</div>
+          <div onClick={() => { onExportSVG(); setOpen(false); }} style={btnBase}>📐 Exportar SVG</div>
           <div style={{ height: 1, background: 'var(--color-ui-border)', margin: '4px 0' }} />
           <div onClick={() => { onResetPositions(); setOpen(false); }} style={btnBase}>↺ Reset posiciones</div>
           <div style={{ height: 1, background: 'var(--color-ui-border)', margin: '4px 0' }} />
