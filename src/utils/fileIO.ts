@@ -5,11 +5,22 @@ import { writeTextFile, readTextFile, writeFile } from '@tauri-apps/plugin-fs';
 import rough from 'roughjs';
 import { renderElement } from './renderer';
 
+const DARK_DEFAULT_STROKE = '#e2e8f0';
+
+function normalizeForExport(elements: CanvasElement[]): CanvasElement[] {
+  return elements.map(el => {
+    if (el.strokeColor === DARK_DEFAULT_STROKE) {
+      return { ...el, strokeColor: '#000000' };
+    }
+    return el;
+  });
+}
+
 export async function saveFile(elements: CanvasElement[]): Promise<boolean> {
   try {
     const path = await save({ filters: [{ name: 'Dibujo de Canvas', extensions: ['json'] }] });
     if (!path) return false;
-    await writeTextFile(path as string, JSON.stringify({ version: 1, elements }, null, 2));
+    await writeTextFile(path as string, JSON.stringify({ version: 1, elements: normalizeForExport(elements) }, null, 2));
     return true;
   } catch (err) {
     console.error('Error al guardar:', err);
@@ -58,7 +69,7 @@ export async function exportPNG(elements: CanvasElement[]) {
 
     const rc = rough.canvas(canvas);
 
-    for (const el of elements) {
+    for (const el of normalizeForExport(elements)) {
       renderElement(ctx, el, rc);
     }
 

@@ -48,14 +48,26 @@ const dropdownBtn: React.CSSProperties = {
   gap: '6px',
 };
 
+function useViewportWidth(): number {
+  const [w, setW] = useState(window.innerWidth);
+  useEffect(() => {
+    const onResize = () => setW(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return w;
+}
+
 export default function Toolbar({
   tool, onToolChange,
   position, onPositionChange,
 }: ToolbarProps) {
+  const vw = useViewportWidth();
   const dragging = useRef(false);
   const dragOffset = useRef({ x: 0, y: 0 });
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const compact = vw < 768;
 
   const handleDragStart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -102,7 +114,7 @@ export default function Toolbar({
       zIndex: 300,
       userSelect: 'none',
       width: 'auto',
-      height: 80,
+      height: 'auto',
       display: 'flex',
       flexDirection: 'column',
       overflow: 'visible',
@@ -112,13 +124,13 @@ export default function Toolbar({
       fontFamily: "'JetBrains Mono', monospace",
       fontSize: '13px',
       color: 'var(--color-text-primary)',
+      maxWidth: Math.min(640, vw - 32),
     }}>
-      {/* Drag handle */}
       <div
         onMouseDown={handleDragStart}
         style={{
           cursor: 'grab',
-          padding: '6px 12px',
+          padding: compact ? '4px 10px' : '6px 12px',
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
@@ -128,60 +140,66 @@ export default function Toolbar({
         }}
       >
         <span style={{ fontSize: '14px', lineHeight: '14px' }}>⠿</span>
-        <span>Butterflies</span>
+        {!compact && <span>Butterflies</span>}
       </div>
 
-      {/* Tool buttons */}
-      <div style={{ padding: '6px 10px', display: 'flex', alignItems: 'center', flex: 1, overflow: 'visible' }}>
+      <div style={{
+        padding: compact ? '4px 6px' : '6px 10px',
+        display: 'flex',
+        alignItems: 'center',
+        flex: 1,
+        overflow: 'visible',
+        flexWrap: 'wrap',
+        gap: compact ? '2px' : '0',
+      }}>
         <button
           onClick={() => onToolChange('select')}
           style={tool === 'select' ? activeBtn : btnBase}
           title="Seleccionar (1)"
         >
-          ⇱ Seleccionar
+          ⇱{!compact && ' Seleccionar'}
         </button>
 
-        <div style={{ width: 1, height: 20, background: 'var(--color-ui-border)', margin: '0 10px' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--color-ui-border)', margin: compact ? '0 4px' : '0 10px' }} />
 
         <button
           onClick={() => onToolChange('hand')}
           style={tool === 'hand' ? activeBtn : btnBase}
           title="Mano (0)"
         >
-          ✋ Mano
+          ✋{!compact && ' Mano'}
         </button>
 
-        <div style={{ width: 1, height: 20, background: 'var(--color-ui-border)', margin: '0 10px' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--color-ui-border)', margin: compact ? '0 4px' : '0 10px' }} />
 
         <button
           onClick={() => onToolChange('freedraw')}
           style={tool === 'freedraw' ? activeBtn : btnBase}
           title="Dibujar (7)"
         >
-          ✎ Dibujar
+          ✎{!compact && ' Dibujar'}
         </button>
 
-        <div style={{ width: 1, height: 20, background: 'var(--color-ui-border)', margin: '0 10px' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--color-ui-border)', margin: compact ? '0 4px' : '0 10px' }} />
 
         <button
           onClick={() => onToolChange('eraser')}
           style={tool === 'eraser' ? activeBtn : btnBase}
           title="Borrador (8)"
         >
-          ⌫ Borrar
+          ⌫{!compact && ' Borrar'}
         </button>
 
-        <div style={{ width: 1, height: 20, background: 'var(--color-ui-border)', margin: '0 10px' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--color-ui-border)', margin: compact ? '0 4px' : '0 10px' }} />
 
-        {/* Formas y Texto dropdown */}
         <div ref={dropdownRef} style={{ position: 'relative' }}>
           <button
             onClick={() => setDropdownOpen(o => !o)}
             style={dropdownBtn}
             title="Formas y Texto"
           >
-            <span>{currentShape ? `${currentShape.icon} ${currentShape.label}` : '▦ Formas y Texto'}</span>
-            <span style={{ fontSize: '10px', opacity: 0.6 }}>▼</span>
+            <span>{currentShape ? `${currentShape.icon}${compact ? '' : ' ' + currentShape.label}` : compact ? '▦' : '▦ Formas y Texto'}</span>
+            {!compact && <span style={{ fontSize: '10px', opacity: 0.6 }}>▼</span>}
           </button>
 
           {dropdownOpen && (
@@ -196,7 +214,7 @@ export default function Toolbar({
               boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
               padding: '4px 0',
               zIndex: 301,
-              minWidth: 155,
+              minWidth: compact ? 130 : 155,
             }}>
               {shapeTools.map((s, i) => (
                 <div key={s.id}>
@@ -206,7 +224,7 @@ export default function Toolbar({
                       setDropdownOpen(false);
                     }}
                     style={{
-                      padding: '6px 12px',
+                      padding: compact ? '5px 10px' : '6px 12px',
                       cursor: 'pointer',
                       color: tool === s.id ? 'var(--color-active-ui)' : 'var(--color-text-primary)',
                       fontFamily: "'JetBrains Mono', monospace",

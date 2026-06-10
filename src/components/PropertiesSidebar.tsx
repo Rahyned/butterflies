@@ -37,7 +37,19 @@ const labelStyle: React.CSSProperties = {
   marginBottom: '4px',
 };
 
+function useViewportWidth(): number {
+  const [w, setW] = useState(window.innerWidth);
+  useEffect(() => {
+    const onResize = () => setW(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return w;
+}
+
 export default function PropertiesSidebar({ element, onUpdate, onClose }: PropertiesSidebarProps) {
+  const vw = useViewportWidth();
+  const isMobile = vw <= 768;
   const [open, setOpen] = useState(false);
   const prevElementRef = useRef(element);
 
@@ -62,6 +74,127 @@ export default function PropertiesSidebar({ element, onUpdate, onClose }: Proper
     setOpen(false);
     onClose();
   }, [onClose]);
+
+  if (isMobile) {
+    return (
+      <>
+        {!open && (
+          <div
+            onClick={() => setOpen(true)}
+            style={{
+              position: 'fixed',
+              bottom: 0,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 200,
+              cursor: 'pointer',
+              userSelect: 'none',
+              background: 'var(--color-ui-bg)',
+              border: '1px solid var(--color-ui-border)',
+              borderBottom: 'none',
+              borderRadius: '8px 8px 0 0',
+              padding: '6px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              color: 'var(--color-text-primary)',
+              fontSize: '13px',
+              fontFamily: "'JetBrains Mono', monospace",
+            }}
+            title="Propiedades de texto"
+          >
+            <span>▲</span>
+            <span>Texto</span>
+          </div>
+        )}
+        {open && (
+          <div style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            width: '100vw',
+            maxHeight: '50vh',
+            background: 'var(--color-sidebar-bg)',
+            border: '1px solid var(--color-ui-border)',
+            borderBottom: 'none',
+            borderRadius: '12px 12px 0 0',
+            zIndex: 200,
+            padding: '16px 16px',
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            overflowY: 'auto',
+            fontFamily: "'JetBrains Mono', monospace",
+            boxShadow: '0 -4px 16px rgba(0,0,0,0.3)',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ color: 'var(--color-text-primary)', fontSize: '14px', fontWeight: 600 }}>Texto</span>
+              <span
+                onClick={handleClose}
+                style={{ cursor: 'pointer', color: 'var(--color-text-primary)', fontSize: '18px', lineHeight: '1' }}
+              >✕</span>
+            </div>
+
+            {element && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                <div style={{ flex: '1 1 120px' }}>
+                  <div style={labelStyle}>Color</div>
+                  <input
+                    type="color"
+                    value={element.strokeColor}
+                    onChange={e => handleChange({ strokeColor: e.target.value })}
+                    style={{ ...inputStyle, padding: '2px', height: 32 }}
+                  />
+                </div>
+                <div style={{ flex: '1 1 80px' }}>
+                  <div style={labelStyle}>Tamaño</div>
+                  <input
+                    type="number"
+                    min={8}
+                    max={120}
+                    value={element.fontSize}
+                    onChange={e => handleChange({ fontSize: Math.max(8, Math.min(120, Number(e.target.value) || 20)) })}
+                    style={inputStyle}
+                  />
+                </div>
+                <div style={{ flex: '1 1 140px' }}>
+                  <div style={labelStyle}>Fuente</div>
+                  <select
+                    value={element.fontFamily}
+                    onChange={e => handleChange({ fontFamily: e.target.value })}
+                    style={inputStyle}
+                  >
+                    {fontFamilies.map(f => (
+                      <option key={f} value={f}>{f.replace(/,.*/, '')}</option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ flex: '1 1 80px' }}>
+                  <div style={labelStyle}>Grosor</div>
+                  <select
+                    value={element.fontWeight || '400'}
+                    onChange={e => handleChange({ fontWeight: e.target.value })}
+                    style={inputStyle}
+                  >
+                    <option value="400">Normal</option>
+                    <option value="700">Negrita</option>
+                  </select>
+                </div>
+              </div>
+            )}
+
+            {!element && (
+              <div style={{ color: 'var(--color-text-secondary)', fontSize: '12px', textAlign: 'center', padding: '12px 0' }}>
+                Seleccioná un texto para editar propiedades
+              </div>
+            )}
+          </div>
+        )}
+      </>
+    );
+  }
 
   if (!open) {
     return (

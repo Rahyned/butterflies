@@ -100,7 +100,10 @@ export async function exportSVG(elements: CanvasElement[]) {
   const vw = Math.ceil(maxX - minX + padding * 2);
   const vh = Math.ceil(maxY - minY + padding * 2);
 
-  const sorted = [...elements].sort((a, b) => a.zIndex - b.zIndex);
+  const normalized = elements.map(el =>
+    el.strokeColor === '#e2e8f0' ? { ...el, strokeColor: '#000000' } : el
+  );
+  const sorted = normalized.sort((a, b) => a.zIndex - b.zIndex);
   const content = sorted.map(el => '    ' + transformElement(el)).join('\n');
 
   const svg = `<?xml version="1.0" encoding="UTF-8"?>

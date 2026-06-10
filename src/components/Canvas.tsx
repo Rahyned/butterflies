@@ -6,6 +6,16 @@ import { renderElement, renderSelectionBox, renderSelectionHandles } from '../ut
 import { getElementBounds } from '../utils/hitTest';
 import { useTheme } from '../hooks/useTheme';
 
+function useViewportWidth(): number {
+  const [w, setW] = useState(window.innerWidth);
+  useEffect(() => {
+    const onResize = () => setW(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return w;
+}
+
 
 interface CanvasProps {
   elements: CanvasElement[];
@@ -83,6 +93,8 @@ export default function Canvas({
   const containerRef = useRef<HTMLDivElement>(null);
   const minimapCanvasRef = useRef<HTMLCanvasElement>(null);
   const [textInputPos, setTextInputPos] = useState<{ x: number; y: number } | null>(null);
+  const vw = useViewportWidth();
+  const compactMinimap = vw < 768;
   const [minimapExpanded, setMinimapExpanded] = useState(false);
   const textInputPosRef = useRef(textInputPos);
   textInputPosRef.current = textInputPos;
@@ -152,8 +164,10 @@ export default function Canvas({
     const maxX = Math.max(...allBounds.map(b => b.x + b.width));
     const maxY = Math.max(...allBounds.map(b => b.y + b.height));
 
-    const mw = minimapExpanded ? 400 : 200;
-    const mh = minimapExpanded ? 300 : 150;
+    const defaultW = compactMinimap ? 150 : 200;
+    const defaultH = compactMinimap ? 112 : 150;
+    const mw = minimapExpanded ? 400 : defaultW;
+    const mh = minimapExpanded ? 300 : defaultH;
     const padding = 20;
     const contentW = maxX - minX + padding * 2;
     const contentH = maxY - minY + padding * 2;

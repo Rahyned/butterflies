@@ -10,12 +10,5 @@
       "command": ["typescript-language-server", "--stdio"],
       "extensions": ["ts", "tsx", "js", "jsx", "mjs", "cjs", "mts", "cts"]
     }
-  },
-  "mcp": {
-    "notion": {
-      "type": "remote",
-      "url": "https://mcp.notion.com/mcp",
-      "enabled": true
-    }
   }
 }

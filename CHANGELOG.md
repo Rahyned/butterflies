@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-06-10
+
+### Interfaz responsive (Desktop + Tablet)
+- `Toolbar.tsx`: altura pasa de `80px` fijo a `auto`, botones colapsan a solo íconos en ventanas < 768px, contenedor con `flexWrap` y `maxWidth` ajustado al viewport
+- `PropertiesSidebar.tsx`: en ≤ 768px cambia de sidebar derecho a bottom drawer ancho completo con controles en grid, toggle con ▲/▼
+- `Canvas.tsx`: minimapa se reduce a 150×112 en < 768px (vs 200×150)
+- `App.tsx`: listener `resize` reposiciona automáticamente los paneles flotantes si quedan fuera del viewport
+- Archivos tocados: `src/components/Toolbar.tsx`, `src/components/PropertiesSidebar.tsx`, `src/components/Canvas.tsx`, `src/App.tsx`
+
 ## 2026-06-05
 
 ### Trazos lisos con roughness 0 (Canvas nativo)

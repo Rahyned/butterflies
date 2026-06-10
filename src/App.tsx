@@ -23,6 +23,7 @@ function randomSeed(): number {
 }
 
 function App() {
+  const [vw, setVw] = useState(window.innerWidth);
   const [toolbarPos, setToolbarPos] = useState(() => ({
     x: Math.max(0, Math.round((window.innerWidth - 520) / 2)),
     y: 40,
@@ -32,6 +33,31 @@ function App() {
     x: window.innerWidth - 220,
     y: 40,
   }));
+
+  useEffect(() => {
+    function onResize() {
+      const w = window.innerWidth;
+      setVw(w);
+      setToolbarPos(prev => {
+        const estW = w < 768 ? 260 : 520;
+        if (prev.x + estW > w) {
+          return { ...prev, x: Math.max(0, Math.round((w - estW) / 2)) };
+        }
+        return prev;
+      });
+      setHamburgerPos(prev => {
+        if (prev.x + 50 > w) return { ...prev, x: 40 };
+        return prev;
+      });
+      setActionsPos(prev => {
+        if (prev.x + 220 > w) return { ...prev, x: w - 220 };
+        return prev;
+      });
+    }
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
   const {
     tool, setTool,
     elements, setElements,
@@ -130,10 +156,11 @@ function App() {
   }, [setElements, setSelectedIds]);
 
   const handleResetPositions = useCallback(() => {
-    setToolbarPos({ x: Math.max(0, Math.round((window.innerWidth - 520) / 2)), y: 40 });
+    const w = vw;
+    setToolbarPos({ x: Math.max(0, Math.round((w - 520) / 2)), y: 40 });
     setHamburgerPos({ x: 40, y: 40 });
-    setActionsPos({ x: window.innerWidth - 220, y: 40 });
-  }, []);
+    setActionsPos({ x: w - 220, y: 40 });
+  }, [vw]);
 
   const handleNew = useCallback(() => {
     setElements([]);

@@ -28,3 +28,6 @@ src-tauri/target/
 
 # Installers
 rustup-init.exe
+
+# Canvas saves
+/lienzos/
