@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-09-06
+
+### Crash log local y feedback
+- `src-tauri/src/lib.rs`: panic hook de Rust escribe en `crash.log` (carpeta de logs de la app: `%APPDATA%\com.butterflies.desktop\logs`) con timestamp RFC3339 y ubicación del panic
+- Nuevo comando Tauri `append_error_log` que vuelca mensajes del frontend a `error.log`
+- `src/main.tsx`: listeners `window.onerror` y `unhandledrejection` reenvían errores web al log vía `invoke` (silencioso, no rompe la app; sin telemetría ni fetch externos)
+- `src/components/HamburgerMenu.tsx`: item `📮 Enviar feedback` abre `mailto:` con `plugin-opener` (sin librerías nuevas, respeta regla offline)
+- `src-tauri/Cargo.toml`: + `time` (feature `formatting`) para timestamps
+- Archivos tocados: `src-tauri/src/lib.rs`, `src-tauri/Cargo.toml`, `src/main.tsx`, `src/components/HamburgerMenu.tsx`, `README.md`, `CHANGELOG.md`
+
+### Fix MCPs locales en opencode
+- `opencode.json` del proyecto usaba `cmd /c mcp-server-*.cmd` (shims inexistentes) → los MCP locales fallaban con `-32000 Connection closed`
+- Cambiados a `cmd /c npx -y @modelcontextprotocol/server-*` (igual que la config global), memory apunta a `C:\Users\Lau\Lau\memory.jsonl` (creado vacío)
+- Archivos tocados: `opencode.json`, `memory.jsonl`
+
 ## 2026-06-10
 
 ### Interfaz responsive (Desktop + Tablet)

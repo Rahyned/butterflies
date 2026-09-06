@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTheme } from '../hooks/useTheme';
+import { openUrl } from '@tauri-apps/plugin-opener';
 
 interface HamburgerMenuProps {
   onNew: () => void;
@@ -41,6 +42,10 @@ export default function HamburgerMenu({ onNew, onSave, onLoad, onExportPNG, onEx
     dragging.current = true;
     dragOffset.current = { x: e.clientX - position.x, y: e.clientY - position.y };
   }, [position]);
+
+  const handleFeedback = useCallback(() => {
+    openUrl('mailto:laaau2406@gmail.com?subject=Butterflies%20Feedback').catch(() => {});
+  }, []);
 
   useEffect(() => {
     const handleMove = (e: MouseEvent) => {
@@ -122,6 +127,8 @@ export default function HamburgerMenu({ onNew, onSave, onLoad, onExportPNG, onEx
           <div onClick={() => { onResetPositions(); setOpen(false); }} style={btnBase}>↺ Reset posiciones</div>
           <div style={{ height: 1, background: 'var(--color-ui-border)', margin: '4px 0' }} />
           <div onClick={() => { toggleTheme(); setOpen(false); }} style={btnBase}>🎨 Tema {theme === 'dark' ? '☀️' : '🌙'}</div>
+          <div style={{ height: 1, background: 'var(--color-ui-border)', margin: '4px 0' }} />
+          <div onClick={() => { handleFeedback(); setOpen(false); }} style={btnBase}>📮 Enviar feedback</div>
         </div>
       )}
     </div>

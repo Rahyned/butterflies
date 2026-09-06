@@ -13,8 +13,7 @@ Construida con **Tauri 2**, **React 19**, **TypeScript** y **rough.js**.
 
 ## Captura
 
-![screenshot](screenshot.png)
-<!-- TODO: agregar screenshot.png del programa funcionando -->
+![logo](public/logo-nombre.png)
 
 ---
 
@@ -58,6 +57,13 @@ Usa el diálogo nativo del sistema operativo (Tauri `plugin-dialog`). Los archiv
 ### 🎯 Estilo sketch
 Todos los elementos se renderizan con **rough.js** (estilo "dibujado a mano") usando una semilla fija por elemento — el dibujo no "tiembla" al re-renderizar.
 
+### 📮 Feedback y logs
+- **Enviar feedback** desde el menú ☰ → abre el cliente de mail con el asunto listo.
+- Los errores web y panics de Rust se guardan en archivos de log locales (sin telemetría, sin internet):
+  - `error.log` — errores de JavaScript del frontend
+  - `crash.log` — panics del backend Rust
+  - Ubicación: carpeta de logs de la app (en Windows, `%APPDATA%\com.butterflies.desktop\logs`)
+
 ---
 
 ## Requisitos
@@ -72,7 +78,7 @@ Todos los elementos se renderizan con **rough.js** (estilo "dibujado a mano") us
 
 ```bash
 # Clonar
-git clone <repo-url>
+git clone https://github.com/Rahyned/butterflies.git
 cd butterflies
 
 # Instalar dependencias
