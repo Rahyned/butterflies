@@ -61,3 +61,31 @@ export function getElementBounds(el: CanvasElement): { x: number; y: number; wid
   }
   return { x: el.x, y: el.y, width: Math.max(el.width, 10), height: Math.max(el.height, 10) };
 }
+
+export type Bounds = { x: number; y: number; width: number; height: number };
+
+export function getHandlePositions(bounds: Bounds): { name: string; pos: Point }[] {
+  const { x, y, width: w, height: h } = bounds;
+  return [
+    { name: 'tl', pos: { x, y } },
+    { name: 'tc', pos: { x: x + w / 2, y } },
+    { name: 'tr', pos: { x: x + w, y } },
+    { name: 'ml', pos: { x, y: y + h / 2 } },
+    { name: 'mr', pos: { x: x + w, y: y + h / 2 } },
+    { name: 'bl', pos: { x, y: y + h } },
+    { name: 'bc', pos: { x: x + w / 2, y: y + h } },
+    { name: 'br', pos: { x: x + w, y: y + h } },
+  ];
+}
+
+export function getHandleAt(point: Point, bounds: Bounds, radius: number): string | null {
+  for (const { name, pos } of getHandlePositions(bounds)) {
+    if (Math.hypot(point.x - pos.x, point.y - pos.y) < radius) return name;
+  }
+  return null;
+}
+
+export function intersects(a: Bounds, b: Bounds): boolean {
+  return a.x < b.x + b.width && a.x + a.width > b.x &&
+         a.y < b.y + b.height && a.y + a.height > b.y;
+}

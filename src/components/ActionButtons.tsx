@@ -7,6 +7,9 @@ interface ActionButtonsProps {
   onGridToggle: () => void;
   showMinimap: boolean;
   onMapToggle: () => void;
+  zoom: number;
+  onZoomFit: () => void;
+  onZoomReset: () => void;
   position: { x: number; y: number };
   onPositionChange: (pos: { x: number; y: number }) => void;
 }
@@ -33,6 +36,7 @@ const activeBtn: React.CSSProperties = {
 
 export default function ActionButtons({
   onUndo, onRedo, gridEnabled, onGridToggle, showMinimap, onMapToggle,
+  zoom, onZoomFit, onZoomReset,
   position, onPositionChange,
 }: ActionButtonsProps) {
   const dragging = useRef(false);
@@ -85,6 +89,15 @@ export default function ActionButtons({
       <div style={{ width: 1, height: 24, background: 'var(--color-ui-border)', margin: '0 2px' }} />
       <button onClick={onGridToggle} style={gridEnabled ? activeBtn : btnBase} title="Mostrar/ocultar cuadrícula">⊞</button>
       <button onClick={onMapToggle} style={showMinimap ? activeBtn : btnBase} title="Mostrar/ocultar minimapa">🗺</button>
+      <div style={{ width: 1, height: 24, background: 'var(--color-ui-border)', margin: '0 2px' }} />
+      <span
+        title="Zoom actual (Ctrl+0 para resetear a 100%, Ctrl+Shift+0 para ajustar a contenido)"
+        style={{ ...btnBase, cursor: 'default', padding: '5px 4px', fontSize: '13px', minWidth: 44, justifyContent: 'center' }}
+      >
+        {Math.round(zoom * 100)}%
+      </span>
+      <button onClick={onZoomFit} style={btnBase} title="Ajustar a contenido (Ctrl+Shift+0)">⤢</button>
+      <button onClick={onZoomReset} style={btnBase} title="Resetear zoom a 100% (Ctrl+0)">⌂</button>
     </div>
   );
 }

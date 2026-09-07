@@ -8,7 +8,8 @@ import { useHistory } from './hooks/useHistory';
 import { useKeyboard } from './hooks/useKeyboard';
 
 import PropertiesSidebar from './components/PropertiesSidebar';
-import { saveFile, loadFile, exportPNG } from './utils/fileIO';
+import { saveFile, loadFile, exportPNG, saveAutosave, loadAutosave, clearAutosave } from './utils/fileIO';
+import { ask } from '@tauri-apps/plugin-dialog';
 import { exportSVG } from './utils/svgExport';
 import { measureTextHeight } from './utils/renderer';
 import type { CanvasElement, TextElement } from './types/canvas';
@@ -81,6 +82,10 @@ function App() {
     isSpacePressed,
     deleteSelected,
     selectAll,
+    nudgeSelected,
+    zoomToFit,
+    resetZoom,
+    zoom,
   } = useCanvas();
 
   const { undo, redo } = useHistory(elements, setElements);
@@ -94,6 +99,34 @@ function App() {
     }, 3500);
     return () => clearTimeout(timer);
   }, []);
+
+  const elementsRef = useRef(elements);
+  elementsRef.current = elements;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (elementsRef.current.length > 0) {
+        void saveAutosave(elementsRef.current);
+      }
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const saved = await loadAutosave();
+      if (cancelled || !saved || saved.length === 0) return;
+      const ok = await ask(
+        'Se encontró un autosave sin guardar. ¿Querés recuperarlo?',
+        { title: 'Butterflies', kind: 'info' },
+      );
+      if (!cancelled && ok) {
+        setElements(saved);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [setElements]);
 
   const handlePointerDown = useCallback((clientX: number, clientY: number, rect: DOMRect) => {
     if (isSpacePressed()) { startPan(clientX, clientY); return; }
@@ -144,7 +177,10 @@ function App() {
     ungroupElements();
   }, [ungroupElements]);
 
-  const handleSave = useCallback(async () => { await saveFile(elements); }, [elements]);
+  const handleSave = useCallback(async () => {
+    await saveFile(elements);
+    await clearAutosave();
+  }, [elements]);
   const handleExport = useCallback(async () => { await exportPNG(elements); }, [elements]);
   const handleExportSVG = useCallback(async () => { await exportSVG(elements); }, [elements]);
   const handleLoad = useCallback(async () => {
@@ -152,6 +188,7 @@ function App() {
     if (loaded) {
       setElements(loaded);
       setSelectedIds([]);
+      await clearAutosave();
     }
   }, [setElements, setSelectedIds]);
 
@@ -165,6 +202,7 @@ function App() {
   const handleNew = useCallback(() => {
     setElements([]);
     setSelectedIds([]);
+    void clearAutosave();
   }, [setElements, setSelectedIds]);
 
   const selectedTextElement: TextElement | null =
@@ -200,6 +238,9 @@ function App() {
     onSendToBack: sendToBack,
     onMoveUp: moveUp,
     onMoveDown: moveDown,
+    onNudge: nudgeSelected,
+    onZoomFit: zoomToFit,
+    onZoomReset: resetZoom,
   });
 
   return (
@@ -227,6 +268,9 @@ function App() {
         onGridToggle={() => setGridEnabled(!gridEnabled)}
         showMinimap={showMinimap}
         onMapToggle={() => setShowMinimap(!showMinimap)}
+        zoom={zoom}
+        onZoomFit={zoomToFit}
+        onZoomReset={resetZoom}
         position={actionsPos}
         onPositionChange={setActionsPos}
       />

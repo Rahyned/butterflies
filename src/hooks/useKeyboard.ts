@@ -16,12 +16,16 @@ interface KeyboardConfig {
   onSendToBack: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  onNudge: (dx: number, dy: number) => void;
+  onZoomFit: () => void;
+  onZoomReset: () => void;
 }
 
 export function useKeyboard({
   onToolChange, onUndo, onRedo, onSave, onLoad,
   onDelete, onSelectAll, onEscape, onSpaceDown, onSpaceUp,
   onBringToFront, onSendToBack, onMoveUp, onMoveDown,
+  onNudge, onZoomFit, onZoomReset,
 }: KeyboardConfig) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -38,6 +42,15 @@ export function useKeyboard({
 
       if (e.key === 'Escape') { onEscape(); return; }
       if (e.key === 'Delete' || e.key === 'Backspace') { onDelete(); return; }
+
+      if (e.key.startsWith('Arrow')) {
+        e.preventDefault();
+        const step = e.shiftKey ? 10 : 1;
+        const dx = e.key === 'ArrowLeft' ? -step : e.key === 'ArrowRight' ? step : 0;
+        const dy = e.key === 'ArrowUp' ? -step : e.key === 'ArrowDown' ? step : 0;
+        onNudge(dx, dy);
+        return;
+      }
 
       if (ctrl) {
         if (e.code === 'BracketLeft') {
@@ -74,6 +87,11 @@ export function useKeyboard({
             e.preventDefault();
             onSelectAll();
             return;
+          case '0':
+            e.preventDefault();
+            if (e.shiftKey) onZoomFit();
+            else onZoomReset();
+            return;
         }
         return;
       }
@@ -104,5 +122,5 @@ export function useKeyboard({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [onToolChange, onUndo, onRedo, onSave, onLoad, onDelete, onSelectAll, onEscape, onSpaceDown, onSpaceUp, onBringToFront, onSendToBack, onMoveUp, onMoveDown]);
+  }, [onToolChange, onUndo, onRedo, onSave, onLoad, onDelete, onSelectAll, onEscape, onSpaceDown, onSpaceUp, onBringToFront, onSendToBack, onMoveUp, onMoveDown, onNudge, onZoomFit, onZoomReset]);
 }

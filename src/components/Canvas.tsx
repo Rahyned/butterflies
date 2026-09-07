@@ -129,8 +129,19 @@ export default function Canvas({
     ctx.translate(camera.x, camera.y);
     ctx.scale(camera.zoom, camera.zoom);
 
+    const vpLeft = -camera.x / camera.zoom;
+    const vpTop = -camera.y / camera.zoom;
+    const vpRight = (window.innerWidth - camera.x) / camera.zoom;
+    const vpBottom = (window.innerHeight - camera.y) / camera.zoom;
+    const margin = 20;
+
     const sorted = [...elements].sort((a, b) => a.zIndex - b.zIndex);
     for (const el of sorted) {
+      const bounds = getElementBounds(el);
+      if (bounds.x > vpRight + margin || bounds.x + bounds.width < vpLeft - margin ||
+          bounds.y > vpBottom + margin || bounds.y + bounds.height < vpTop - margin) {
+        continue;
+      }
       renderElement(ctx, el, rc);
     }
 

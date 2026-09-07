@@ -64,6 +64,8 @@ _(ninguno — todo implementado)_
 | TMP/TEMP en `.cargo/config.toml` | Evita que gcc intente crear archivos temporales en `C:\WINDOWS` (permiso denegado) |
 | `useHistory` con `useRef` en vez de `useState` para stack | Evita closures stale en callbacks de undo/redo |
 | Colores/grosor/roughness en estado de `useCanvas` | Flujo unificado desde Toolbar → useCanvas → elementos dibujados |
+| `useCanvas` como orquestador + sub-hooks (`useCamera`, `useSelection`, `useDrawing`, `useLayers`, `useGridAndMinimap`) | Separa responsabilidades del canvas en módulos aislados y testeables; el orquestador pasa estado/ctx compartido |
+| Índice espacial (`spatialIndex.ts`) con buckets de 128px | Hit-testing por click deja de ser O(n); consulta solo la celda cercana al cursor |
 | Textarea no-controlado (sin `value` prop) | WebView2 + React 19 no renderiza `<textarea>` controlado con `value`; no-controlado funciona |
 | Tema via CSS variables + `data-theme` en `<html>` | Permite cambiar colores sin re-renderizar React; todos los componentes usan `var(--color-*)` en inline styles |
 | localStorage para preferencia de tema | Excepción a la regla "no localStorage" porque es preferencia UI, no datos de canvas |
@@ -98,14 +100,21 @@ src/
 │   ├── Canvas.tsx             ← canvas + rough.js + text overlay
 │   └── Toolbar.tsx            ← barra de herramientas y controles
 ├── hooks/
-│   ├── useCanvas.ts           ← estado del canvas, dibujo, selección, zoom/pan
+│   ├── useCanvas.ts           ← orquestador: compone los sub-hooks + estilo/tema
+│   ├── useCamera.ts           ← zoom/pan/cámara, world↔screen, zoom to fit
+│   ├── useSelection.ts        ← selección, move, resize, selection box (+ índice espacial)
+│   ├── useDrawing.ts          ← creación de elementos en progreso (rect/ellipse/line/arrow/freedraw/eraser)
+│   ├── useLayers.ts           ← zIndex (bringToFront/sendToBack/moveUp/moveDown), grupos, delete
+│   ├── useGridAndMinimap.ts   ← grid + minimapa toggles
 │   ├── useHistory.ts          ← undo/redo con refs (50 estados)
-│   ├── useKeyboard.ts         ← atajos de teclado
+│   ├── useKeyboard.ts         ← atajos de teclado (+ nudge flechas, zoom fit/reset)
 │   └── useTheme.tsx           ← tema oscuro/claro con contexto + CSS variables
 └── utils/
     ├── renderer.ts            ← dibujado con rough.js + selection box/handles
-    ├── hitTest.ts             ← detección de clic sobre elementos
-    └── fileIO.ts              ← guardar/cargar via Tauri FS + dialog
+    ├── hitTest.ts             ← detección de clic, bounds, handles, intersects
+    ├── spatialIndex.ts        ← grid de buckets 128px para hit-testing eficiente
+    ├── random.ts              ← generateId, randomSeed, getNextZIndex
+    └── fileIO.ts              ← guardar/cargar + autosave via Tauri FS + dialog
 src-tauri/
 ├── src/lib.rs                 ← plugins: opener, fs, dialog
 ├── src/main.rs                ← entry point del binario
@@ -113,3 +122,14 @@ src-tauri/
 ├── tauri.conf.json            ← configuración Tauri
 └── capabilities/default.json  ← permisos: fs, dialog
 ```
+
+---
+
+## Skills por default (usar automáticamente)
+
+- `design-dna`: sistema de estilos e identidad visual (temas oscuro/claro con CSS variables)
+- `motion-design`: interacciones y transiciones sutiles de UI
+- `genjutsu`: efectos visuales generativos / procedurales en canvas (opcional)
+- `python-performance-optimization` / `python-testing-patterns`: NO aplica (proyecto TS/Rust)
+
+Nota: este proyecto usa CSS puro + rough.js + Canvas 2D (no WebGL), por lo que `three.js` (3D/WebGL) no aplica como herramienta principal. Usar `three.js` solo si se agrega visualización 3D explícita.

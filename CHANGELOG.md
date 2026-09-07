@@ -1,5 +1,37 @@
 # Changelog
 
+## 2026-09-06 (2)
+
+### Refactor de useCanvas en sub-hooks
+- `useCanvas.ts` ahora es un orquestador que compone 5 sub-hooks, cada uno con una responsabilidad aislada:
+  - `useCamera.ts` → zoom/pan/cámara, conversión world↔screen, zoom to fit, reset zoom
+  - `useSelection.ts` → selección simple/múltiple, move, resize (8 handles), selection box
+  - `useDrawing.ts` → creación de elementos en progreso (rect, ellipse, line, arrow, freedraw, eraser), shift constraint
+  - `useLayers.ts` → zIndex (bringToFront/sendToBack/moveUp/moveDown), grupos, delete
+  - `useGridAndMinimap.ts` → grid + minimapa toggles
+- Helpers de hit-test (getHandleAt, getHandlePositions, intersects) movidos a `src/utils/hitTest.ts`
+- `generateId`, `randomSeed`, `getNextZIndex` movidos a `src/utils/random.ts`
+- Archivos tocados: `src/hooks/useCanvas.ts`, `src/hooks/useCamera.ts`, `src/hooks/useSelection.ts`, `src/hooks/useDrawing.ts`, `src/hooks/useLayers.ts`, `src/hooks/useGridAndMinimap.ts`, `src/utils/hitTest.ts`, `src/utils/random.ts`
+
+### Índice espacial + culling de viewport
+- Nuevo `src/utils/spatialIndex.ts`: grid de buckets de 128px que indexa elementos por bounds para hit-testing eficiente (evita O(n) por click)
+- `useSelection` usa el índice espacial para detectar el elemento en el click (busca en la celda en vez de recorrer todos)
+- `Canvas.tsx`: render saltea elementos fuera del viewport (culling por bounds, con margen de 20px en world space)
+- Archivos tocados: `src/utils/spatialIndex.ts`, `src/hooks/useSelection.ts`, `src/hooks/useCanvas.ts`, `src/components/Canvas.tsx`
+
+### Autosave y recovery
+- `src/utils/fileIO.ts`: `saveAutosave()`, `loadAutosave()`, `clearAutosave()` escriben/leen/borran `autosave.json` en el app data dir (`appDataDir` de `@tauri-apps/api/path`)
+- `App.tsx`: guarda autosave cada 30s si hay elementos; al montar, pregunta (diálogo `ask`) si quiere recuperar el autosave; limpia el autosave al Guardar/Nuevo/Importar
+- `capabilities/default.json`: + `core:path:default` para `appDataDir`
+- Archivos tocados: `src/utils/fileIO.ts`, `src/App.tsx`, `src-tauri/capabilities/default.json`
+
+### Nudge con flechas + zoom mejorado
+- `useKeyboard.ts`: flechas mueven la selección (Shift = paso 10px), `Ctrl+0` reset zoom, `Ctrl+Shift+0` zoom to fit
+- `useCanvas.ts`: `nudgeSelected(dx,dy)`, `zoomToFit()`, `resetZoom()`, expone `zoom`
+- `ActionButtons.tsx`: indicador de zoom % + botones ⤢ (fit) y ⌂ (reset 100%)
+- Zoom con Ctrl+rueda ya estaba centrado en el cursor (se conserva en `useCamera.handleWheel`)
+- Archivos tocados: `src/hooks/useKeyboard.ts`, `src/hooks/useCanvas.ts`, `src/components/ActionButtons.tsx`, `src/App.tsx`
+
 ## 2026-09-06
 
 ### Crash log local y feedback
