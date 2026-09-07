@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-09-06 (3)
+
+### Tests automatizados (Vitest + jsdom + Testing Library)
+- Configurado `vitest.config.ts` con environment jsdom, setup en `src/test/setup.ts` y mock de canvas 2D en `src/test/canvas2d.ts` (ctx stub con registro de llamadas, cacheado por canvas)
+- Mocks de APIs Tauri en `src/test/setup.ts`: plugin-fs, plugin-dialog, plugin-opener, api/path, api/core
+- Scripts npm: `test` (vitest run) y `test:watch`
+- **Unit tests**: `spatialIndex.test.ts` (buckets, queries, sin duplicados), `hitTest.test.ts` (bounds, hit testing, handles, intersects), `random.test.ts` (ids, seeds, zIndex)
+- **Integration tests hooks**: `useCanvas.test.tsx` cubre 18 flujos E2E — dibujar rect/ellipse/line/arrow/freedraw, shift constraint, eraser, selección, mover, selection box, resize, delete, nudge, zoom centrado en cursor, zoom to fit, reset zoom, undo/redo, bringToFront
+- **E2E App**: `App.test.tsx` monta la App completa — dibujar rect y autosave a los 30s (fake timers), Ctrl+S, atajos de teclado, feedback mailto, Nuevo, recovery de autosave
+- **E2E Canvas**: `Canvas.test.tsx` verifica render de elementos + culling (no dibuja fuera del viewport) + drawingElement en progreso
+- **fileIO**: `fileIO.test.ts` cubre saveFile/loadFile (con normalización de color), saveAutosave/loadAutosave/clearAutosave
+- Tests excluidos del build de producción (`tsconfig.json` exclude `src/test/**` y `*.test.*`)
+- Archivos tocados: `vitest.config.ts`, `src/test/setup.ts`, `src/test/canvas2d.ts`, `package.json`, `tsconfig.json`, 7 archivos `*.test.ts(x)`
+
 ## 2026-09-06 (2)
 
 ### Refactor de useCanvas en sub-hooks
