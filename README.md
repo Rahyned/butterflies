@@ -11,14 +11,6 @@
 Hacer bocetos y diagramas rápidos sin depender de una cuenta, de internet ni del peso de una app Electron.
 
 
----
-
-## Captura
-
-![logo](public/logo-nombre.png)
-
----
-
 ## Qué hace
 
 - **8 herramientas:** selección, rectángulo, elipse, línea, flecha, texto, dibujo libre y borrador (teclas `1`–`8`).
